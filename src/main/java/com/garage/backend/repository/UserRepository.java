@@ -34,6 +34,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findActiveUserByEmail(@Param("email") String email);
 
     /**
+     * Find user by mobile number
+     * @param mobileNumber user mobile number
+     * @return Optional<User>
+     */
+    Optional<User> findByMobileNumber(String mobileNumber);
+
+    /**
      * Find user by email and garage name
      * @param email user email
      * @param garageName garage name

@@ -122,4 +122,88 @@ public class AuthService {
             return AuthResponse.error("Invalid email or password");
         }
     }
+
+    /**
+     * Reset password using phone number
+     */
+    public boolean resetPassword(String phoneNumber, String newPassword) {
+        try {
+            // Find user by phone number
+            User user = userRepository.findByMobileNumber(phoneNumber).orElse(null);
+            if (user == null) {
+                return false;
+            }
+
+            // Update password
+            user.setPassword(passwordEncoder.encode(newPassword));
+            userRepository.save(user);
+            return true;
+        } catch (Exception e) {
+            System.err.println("Error resetting password: " + e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Login with OTP using phone number
+     */
+    public AuthResponse loginWithOTP(String phoneNumber) {
+        try {
+            // Find user by phone number
+            User user = userRepository.findByMobileNumber(phoneNumber).orElse(null);
+            if (user == null) {
+                return AuthResponse.error("User not found with this phone number");
+            }
+
+            // Load user details
+            UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
+
+            // Generate tokens
+            String token = jwtUtil.generateToken(userDetails);
+            String refreshToken = jwtUtil.generateRefreshToken(userDetails);
+
+            // Create user info
+            AuthResponse.UserInfo userInfo = new AuthResponse.UserInfo(
+                    user.getId(),
+                    user.getFirstName(),
+                    user.getLastName(),
+                    user.getEmail(),
+                    user.getGarageName(),
+                    user.getState(),
+                    user.getCity(),
+                    user.getCreatedAt()
+            );
+
+            return AuthResponse.success(token, refreshToken, jwtUtil.getExpiration(), userInfo);
+
+        } catch (Exception e) {
+            return AuthResponse.error("Login failed: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Change password for authenticated user
+     */
+    public boolean changePassword(String userEmail, String currentPassword, String newPassword) {
+        try {
+            // Find user by email
+            User user = userRepository.findByEmail(userEmail).orElse(null);
+            if (user == null) {
+                return false;
+            }
+
+            // Verify current password
+            if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+                return false;
+            }
+
+            // Update password
+            user.setPassword(passwordEncoder.encode(newPassword));
+            userRepository.save(user);
+            return true;
+        } catch (Exception e) {
+            System.err.println("Error changing password: " + e.getMessage());
+            return false;
+        }
+    }
 } 

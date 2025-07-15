@@ -38,7 +38,16 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/admin/register", "/admin/login", "/actuator/**").permitAll()
+                .requestMatchers(
+                    "/admin/register", 
+                    "/admin/login", 
+                    "/admin/forgot-password",
+                    "/admin/verify-otp",
+                    "/admin/reset-password",
+                    "/admin/send-login-otp",
+                    "/admin/login-with-otp",
+                    "/actuator/**"
+                ).permitAll()
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session

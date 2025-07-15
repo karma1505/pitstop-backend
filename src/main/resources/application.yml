@@ -10,7 +10,7 @@ spring:
   
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
@@ -55,4 +55,13 @@ logging:
 aws:
   region: us-east-1
   s3:
-    bucket-name: garage-management-bucket 
+    bucket-name: garage-management-bucket
+
+# SMS Configuration
+sms:
+  gateway:
+    api-key: ""  # Add your SMS Gateway API key here
+    user-id: ""  # Add your SMS Gateway user ID here
+    password: ""  # Add your SMS Gateway password here
+    sender-id: "IGARAGE"
+    base-url: "https://www.smsgateway.center/OTPApi/send" 

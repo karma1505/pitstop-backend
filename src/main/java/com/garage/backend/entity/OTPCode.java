@@ -2,6 +2,7 @@ package com.garage.backend.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "otp_codes")
@@ -10,6 +11,13 @@ public class OTPCode {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    
+    @Column(name = "user_id", nullable = true)
+    private UUID userId;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    private User user;
     
     @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
@@ -40,6 +48,15 @@ public class OTPCode {
         this.createdAt = LocalDateTime.now();
     }
     
+    public OTPCode(UUID userId, String phoneNumber, String otpCode, String type, LocalDateTime expiresAt) {
+        this.userId = userId;
+        this.phoneNumber = phoneNumber;
+        this.otpCode = otpCode;
+        this.type = type;
+        this.expiresAt = expiresAt;
+        this.createdAt = LocalDateTime.now();
+    }
+    
     // Getters and Setters
     public Long getId() {
         return id;
@@ -47,6 +64,22 @@ public class OTPCode {
     
     public void setId(Long id) {
         this.id = id;
+    }
+    
+    public UUID getUserId() {
+        return userId;
+    }
+    
+    public void setUserId(UUID userId) {
+        this.userId = userId;
+    }
+    
+    public User getUser() {
+        return user;
+    }
+    
+    public void setUser(User user) {
+        this.user = user;
     }
     
     public String getPhoneNumber() {

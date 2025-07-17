@@ -105,6 +105,8 @@ public class AuthResponse {
         private String city;
         private String addressLine1;
         private String addressLine2;
+        private String mobileNumber;
+        private String pincode;
         private LocalDateTime createdAt;
 
         // Constructors
@@ -112,7 +114,7 @@ public class AuthResponse {
 
         public UserInfo(UUID id, String firstName, String lastName, String email, 
                       String garageName, String state, String city, String addressLine1, 
-                      String addressLine2, LocalDateTime createdAt) {
+                      String addressLine2, String mobileNumber, String pincode, LocalDateTime createdAt) {
             this.id = id;
             this.firstName = firstName;
             this.lastName = lastName;
@@ -122,6 +124,8 @@ public class AuthResponse {
             this.city = city;
             this.addressLine1 = addressLine1;
             this.addressLine2 = addressLine2;
+            this.mobileNumber = mobileNumber;
+            this.pincode = pincode;
             this.createdAt = createdAt;
         }
 
@@ -196,6 +200,22 @@ public class AuthResponse {
 
         public void setAddressLine2(String addressLine2) {
             this.addressLine2 = addressLine2;
+        }
+
+        public String getMobileNumber() {
+            return mobileNumber;
+        }
+
+        public void setMobileNumber(String mobileNumber) {
+            this.mobileNumber = mobileNumber;
+        }
+
+        public String getPincode() {
+            return pincode;
+        }
+
+        public void setPincode(String pincode) {
+            this.pincode = pincode;
         }
 
         public LocalDateTime getCreatedAt() {

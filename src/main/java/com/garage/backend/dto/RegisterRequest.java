@@ -44,12 +44,18 @@ public class RegisterRequest {
     @Size(max = 100, message = "Garage name must not exceed 100 characters")
     private String garageName;
 
+    @Size(max = 255, message = "Address line 1 must not exceed 255 characters")
+    private String addressLine1;
+
+    @Size(max = 255, message = "Address line 2 must not exceed 255 characters")
+    private String addressLine2;
+
     // Constructors
     public RegisterRequest() {}
 
     public RegisterRequest(String firstName, String lastName, String email, String password, 
                          String confirmPassword, String state, String city, String pincode, 
-                         String mobileNumber, String garageName) {
+                         String mobileNumber, String garageName, String addressLine1, String addressLine2) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -60,6 +66,8 @@ public class RegisterRequest {
         this.pincode = pincode;
         this.mobileNumber = mobileNumber;
         this.garageName = garageName;
+        this.addressLine1 = addressLine1;
+        this.addressLine2 = addressLine2;
     }
 
     // Getters and Setters
@@ -143,6 +151,22 @@ public class RegisterRequest {
         this.garageName = garageName;
     }
 
+    public String getAddressLine1() {
+        return addressLine1;
+    }
+
+    public void setAddressLine1(String addressLine1) {
+        this.addressLine1 = addressLine1;
+    }
+
+    public String getAddressLine2() {
+        return addressLine2;
+    }
+
+    public void setAddressLine2(String addressLine2) {
+        this.addressLine2 = addressLine2;
+    }
+
     @Override
     public String toString() {
         return "RegisterRequest{" +
@@ -154,6 +178,8 @@ public class RegisterRequest {
                 ", pincode='" + pincode + '\'' +
                 ", mobileNumber='" + mobileNumber + '\'' +
                 ", garageName='" + garageName + '\'' +
+                ", addressLine1='" + addressLine1 + '\'' +
+                ", addressLine2='" + addressLine2 + '\'' +
                 '}';
     }
 } 

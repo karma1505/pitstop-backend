@@ -7,6 +7,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "users")
@@ -14,8 +15,8 @@ import java.time.LocalDateTime;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @NotBlank(message = "First name is required")
     @Size(min = 2, max = 50, message = "First name must be between 2 and 50 characters")
@@ -61,6 +62,14 @@ public class User {
     @Column(name = "garage_name", nullable = false)
     private String garageName;
 
+    @Size(max = 255, message = "Address line 1 must not exceed 255 characters")
+    @Column(name = "address_line1")
+    private String addressLine1;
+
+    @Size(max = 255, message = "Address line 2 must not exceed 255 characters")
+    @Column(name = "address_line2")
+    private String addressLine2;
+
     @Column(name = "is_active")
     private Boolean isActive = true;
 
@@ -76,7 +85,8 @@ public class User {
     public User() {}
 
     public User(String firstName, String lastName, String email, String password, 
-                String state, String city, String pincode, String mobileNumber, String garageName) {
+                String state, String city, String pincode, String mobileNumber, 
+                String garageName, String addressLine1, String addressLine2) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -86,14 +96,16 @@ public class User {
         this.pincode = pincode;
         this.mobileNumber = mobileNumber;
         this.garageName = garageName;
+        this.addressLine1 = addressLine1;
+        this.addressLine2 = addressLine2;
     }
 
     // Getters and Setters
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -169,6 +181,22 @@ public class User {
         this.garageName = garageName;
     }
 
+    public String getAddressLine1() {
+        return addressLine1;
+    }
+
+    public void setAddressLine1(String addressLine1) {
+        this.addressLine1 = addressLine1;
+    }
+
+    public String getAddressLine2() {
+        return addressLine2;
+    }
+
+    public void setAddressLine2(String addressLine2) {
+        this.addressLine2 = addressLine2;
+    }
+
     public Boolean getIsActive() {
         return isActive;
     }
@@ -205,6 +233,8 @@ public class User {
                 ", pincode='" + pincode + '\'' +
                 ", mobileNumber='" + mobileNumber + '\'' +
                 ", garageName='" + garageName + '\'' +
+                ", addressLine1='" + addressLine1 + '\'' +
+                ", addressLine2='" + addressLine2 + '\'' +
                 ", isActive=" + isActive +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +

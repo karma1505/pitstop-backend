@@ -56,6 +56,8 @@ public class AuthService {
             user.setPincode(request.getPincode());
             user.setMobileNumber(request.getMobileNumber());
             user.setGarageName(request.getGarageName());
+            user.setAddressLine1(request.getAddressLine1());
+            user.setAddressLine2(request.getAddressLine2());
             user.setIsActive(true);
 
             User savedUser = userRepository.save(user);
@@ -74,6 +76,8 @@ public class AuthService {
                     savedUser.getGarageName(),
                     savedUser.getState(),
                     savedUser.getCity(),
+                    savedUser.getAddressLine1(),
+                    savedUser.getAddressLine2(),
                     savedUser.getCreatedAt()
             );
 
@@ -113,6 +117,8 @@ public class AuthService {
                     user.getGarageName(),
                     user.getState(),
                     user.getCity(),
+                    user.getAddressLine1(),
+                    user.getAddressLine2(),
                     user.getCreatedAt()
             );
 

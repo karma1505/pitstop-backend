@@ -1,6 +1,7 @@
 package com.garage.backend.dto;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public class AuthResponse {
 
@@ -95,20 +96,23 @@ public class AuthResponse {
 
     // Inner class for user information
     public static class UserInfo {
-        private Long id;
+        private UUID id;
         private String firstName;
         private String lastName;
         private String email;
         private String garageName;
         private String state;
         private String city;
+        private String addressLine1;
+        private String addressLine2;
         private LocalDateTime createdAt;
 
         // Constructors
         public UserInfo() {}
 
-        public UserInfo(Long id, String firstName, String lastName, String email, 
-                      String garageName, String state, String city, LocalDateTime createdAt) {
+        public UserInfo(UUID id, String firstName, String lastName, String email, 
+                      String garageName, String state, String city, String addressLine1, 
+                      String addressLine2, LocalDateTime createdAt) {
             this.id = id;
             this.firstName = firstName;
             this.lastName = lastName;
@@ -116,15 +120,17 @@ public class AuthResponse {
             this.garageName = garageName;
             this.state = state;
             this.city = city;
+            this.addressLine1 = addressLine1;
+            this.addressLine2 = addressLine2;
             this.createdAt = createdAt;
         }
 
         // Getters and Setters
-        public Long getId() {
+        public UUID getId() {
             return id;
         }
 
-        public void setId(Long id) {
+        public void setId(UUID id) {
             this.id = id;
         }
 
@@ -176,6 +182,22 @@ public class AuthResponse {
             this.city = city;
         }
 
+        public String getAddressLine1() {
+            return addressLine1;
+        }
+
+        public void setAddressLine1(String addressLine1) {
+            this.addressLine1 = addressLine1;
+        }
+
+        public String getAddressLine2() {
+            return addressLine2;
+        }
+
+        public void setAddressLine2(String addressLine2) {
+            this.addressLine2 = addressLine2;
+        }
+
         public LocalDateTime getCreatedAt() {
             return createdAt;
         }
@@ -194,6 +216,8 @@ public class AuthResponse {
                     ", garageName='" + garageName + '\'' +
                     ", state='" + state + '\'' +
                     ", city='" + city + '\'' +
+                    ", addressLine1='" + addressLine1 + '\'' +
+                    ", addressLine2='" + addressLine2 + '\'' +
                     ", createdAt=" + createdAt +
                     '}';
         }

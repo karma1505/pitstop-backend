@@ -3,6 +3,7 @@ package com.garage.backend.service;
 import com.garage.backend.dto.AuthResponse;
 import com.garage.backend.dto.LoginRequest;
 import com.garage.backend.dto.RegisterRequest;
+import com.garage.backend.dto.UpdateProfileRequest;
 import com.garage.backend.entity.User;
 import com.garage.backend.repository.UserRepository;
 import com.garage.backend.security.JwtUtil;
@@ -78,6 +79,8 @@ public class AuthService {
                     savedUser.getCity(),
                     savedUser.getAddressLine1(),
                     savedUser.getAddressLine2(),
+                    savedUser.getMobileNumber(),
+                    savedUser.getPincode(),
                     savedUser.getCreatedAt()
             );
 
@@ -119,6 +122,8 @@ public class AuthService {
                     user.getCity(),
                     user.getAddressLine1(),
                     user.getAddressLine2(),
+                    user.getMobileNumber(),
+                    user.getPincode(),
                     user.getCreatedAt()
             );
 
@@ -177,6 +182,10 @@ public class AuthService {
                     user.getGarageName(),
                     user.getState(),
                     user.getCity(),
+                    user.getAddressLine1(),
+                    user.getAddressLine2(),
+                    user.getMobileNumber(),
+                    user.getPincode(),
                     user.getCreatedAt()
             );
 
@@ -210,6 +219,60 @@ public class AuthService {
         } catch (Exception e) {
             System.err.println("Error changing password: " + e.getMessage());
             return false;
+        }
+    }
+
+    /**
+     * Update user profile
+     */
+    public AuthResponse updateProfile(String userEmail, UpdateProfileRequest request) {
+        try {
+            // Find user by email
+            User user = userRepository.findByEmail(userEmail).orElse(null);
+            if (user == null) {
+                return AuthResponse.error("User not found");
+            }
+
+            // Check if email is being changed and if it already exists
+            if (!user.getEmail().equals(request.getEmail()) && 
+                userRepository.existsByEmail(request.getEmail())) {
+                return AuthResponse.error("Email already exists");
+            }
+
+            // Update user fields
+            user.setFirstName(request.getFirstName());
+            user.setLastName(request.getLastName());
+            user.setEmail(request.getEmail());
+            user.setState(request.getState());
+            user.setCity(request.getCity());
+            user.setPincode(request.getPincode() != null && !request.getPincode().trim().isEmpty() ? request.getPincode() : null);
+            user.setMobileNumber(request.getMobileNumber() != null && !request.getMobileNumber().trim().isEmpty() ? request.getMobileNumber() : null);
+            user.setGarageName(request.getGarageName());
+            user.setAddressLine1(request.getAddressLine1() != null && !request.getAddressLine1().trim().isEmpty() ? request.getAddressLine1() : null);
+            user.setAddressLine2(request.getAddressLine2() != null && !request.getAddressLine2().trim().isEmpty() ? request.getAddressLine2() : null);
+
+            User savedUser = userRepository.save(user);
+
+            // Create updated user info
+            AuthResponse.UserInfo userInfo = new AuthResponse.UserInfo(
+                    savedUser.getId(),
+                    savedUser.getFirstName(),
+                    savedUser.getLastName(),
+                    savedUser.getEmail(),
+                    savedUser.getGarageName(),
+                    savedUser.getState(),
+                    savedUser.getCity(),
+                    savedUser.getAddressLine1(),
+                    savedUser.getAddressLine2(),
+                    savedUser.getMobileNumber(),
+                    savedUser.getPincode(),
+                    savedUser.getCreatedAt()
+            );
+
+            return AuthResponse.success(null, null, null, userInfo);
+
+        } catch (Exception e) {
+            return AuthResponse.error("Profile update failed: " + e.getMessage());
         }
     }
 } 

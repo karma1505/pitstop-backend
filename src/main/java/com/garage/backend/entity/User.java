@@ -7,6 +7,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -16,6 +17,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id", columnDefinition = "UUID")
     private UUID id;
 
     @NotBlank(message = "First name is required")
@@ -80,6 +82,9 @@ public class User {
     @LastModifiedDate
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<OTPCode> otpCodes;
 
     // Constructors
     public User() {}
@@ -219,6 +224,14 @@ public class User {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public List<OTPCode> getOtpCodes() {
+        return otpCodes;
+    }
+
+    public void setOtpCodes(List<OTPCode> otpCodes) {
+        this.otpCodes = otpCodes;
     }
 
     @Override

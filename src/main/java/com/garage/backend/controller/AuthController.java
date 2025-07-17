@@ -7,6 +7,7 @@ import com.garage.backend.dto.ForgotPasswordRequest;
 import com.garage.backend.dto.OTPVerificationRequest;
 import com.garage.backend.dto.ResetPasswordRequest;
 import com.garage.backend.dto.ChangePasswordRequest;
+import com.garage.backend.dto.UpdateProfileRequest;
 import com.garage.backend.service.AuthService;
 import com.garage.backend.service.OTPService;
 import jakarta.validation.Valid;
@@ -219,6 +220,26 @@ public class AuthController {
             response.put("success", false);
             response.put("message", "An error occurred while changing password");
             return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+    @PatchMapping("/update-profile")
+    public ResponseEntity<AuthResponse> updateProfile(@Valid @RequestBody UpdateProfileRequest request) {
+        try {
+            // Get current user from authentication context
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String userEmail = authentication.getName();
+            
+            // Update profile
+            AuthResponse response = authService.updateProfile(userEmail, request);
+            
+            if (response.isSuccess()) {
+                return ResponseEntity.ok(response);
+            } else {
+                return ResponseEntity.badRequest().body(response);
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(AuthResponse.error("An error occurred while updating profile"));
         }
     }
 

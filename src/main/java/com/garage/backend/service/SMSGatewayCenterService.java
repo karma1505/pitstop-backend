@@ -23,7 +23,7 @@ public class SMSGatewayCenterService implements SMSService {
     @Value("${sms.gateway.password:}")
     private String password;
     
-    @Value("${sms.gateway.sender-id:IGARAGE}")
+    @Value("${sms.gateway.sender-id:PITSTOP}")
     private String senderId;
     
     @Value("${sms.gateway.base-url:https://www.smsgateway.center/OTPApi/send}")

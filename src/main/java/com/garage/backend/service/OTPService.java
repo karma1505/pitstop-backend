@@ -19,7 +19,7 @@ public class OTPService {
     @Autowired
     private SMSService smsService;
     
-    private static final String OTP_MESSAGE_TEMPLATE = "Your iGarage verification code is $otp$. Valid for 2 minutes.";
+    private static final String OTP_MESSAGE_TEMPLATE = "Your PitStop verification code is $otp$. Valid for 2 minutes.";
     private static final int OTP_LENGTH = 4;
     private static final int OTP_EXPIRY_MINUTES = 2;
     private static final int RATE_LIMIT_REQUESTS = 5;

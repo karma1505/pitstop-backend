@@ -8,9 +8,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @SpringBootApplication
 @EnableJpaAuditing
 @EnableJpaRepositories(basePackages = "com.garage.backend.repository")
-public class GarageBackendApplication {
+public class PitStopBackendApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(GarageBackendApplication.class, args);
+        SpringApplication.run(PitStopBackendApplication.class, args);
     }
 } 

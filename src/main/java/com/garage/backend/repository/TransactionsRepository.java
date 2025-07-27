@@ -22,7 +22,7 @@ public interface TransactionsRepository extends JpaRepository<Transactions, UUID
      */
     @Query("SELECT COALESCE(SUM(t.amount), 0) FROM Transactions t " +
            "WHERE t.transactionType = 'INCOME' AND t.status = 'COMPLETED' " +
-           "AND DATE(t.transactionDate) = CURRENT_DATE")
+           "AND CAST(t.transactionDate AS date) = CURRENT_DATE")
     BigDecimal getTodayIncome();
 
     /**
@@ -31,7 +31,7 @@ public interface TransactionsRepository extends JpaRepository<Transactions, UUID
      */
     @Query("SELECT COALESCE(SUM(t.amount), 0) FROM Transactions t " +
            "WHERE t.transactionType = 'EXPENSE' AND t.status = 'COMPLETED' " +
-           "AND DATE(t.transactionDate) = CURRENT_DATE")
+           "AND CAST(t.transactionDate AS date) = CURRENT_DATE")
     BigDecimal getTodayExpenses();
 
     /**
@@ -88,7 +88,7 @@ public interface TransactionsRepository extends JpaRepository<Transactions, UUID
      */
     @Query("SELECT t FROM Transactions t " +
            "WHERE t.transactionType = :transactionType " +
-           "AND DATE(t.transactionDate) = CURRENT_DATE " +
+           "AND CAST(t.transactionDate AS date) = CURRENT_DATE " +
            "ORDER BY t.transactionDate DESC")
     List<Transactions> findByTransactionTypeAndToday(@Param("transactionType") String transactionType);
 

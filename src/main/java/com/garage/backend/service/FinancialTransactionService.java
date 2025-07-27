@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -124,6 +125,12 @@ public class FinancialTransactionService {
         BigDecimal receivedToday = transactionsRepository.getTodayIncome();
         BigDecimal spentToday = transactionsRepository.getTodayExpenses();
         BigDecimal amountToBeCollected = transactionsRepository.getPendingIncome();
+        
+        // Handle null values from database
+        if (receivedToday == null) receivedToday = BigDecimal.ZERO;
+        if (spentToday == null) spentToday = BigDecimal.ZERO;
+        if (amountToBeCollected == null) amountToBeCollected = BigDecimal.ZERO;
+        
         BigDecimal netProfit = receivedToday.subtract(spentToday);
 
         // Get recent transactions (last 7 days)
@@ -176,7 +183,10 @@ public class FinancialTransactionService {
             // If only transaction type is provided, get all transactions of that type
             List<Transactions> transactions = transactionsRepository.findByTransactionTypeAndToday(transactionType);
             // Convert to page manually (simplified approach)
-            transactionsPage = Page.empty(pageable);
+            int start = (int) pageable.getOffset();
+            int end = Math.min((start + pageable.getPageSize()), transactions.size());
+            List<Transactions> pageContent = transactions.subList(start, end);
+            transactionsPage = new PageImpl<>(pageContent, pageable, transactions.size());
         } else {
             // Get all transactions
             transactionsPage = transactionsRepository.findAll(pageable);

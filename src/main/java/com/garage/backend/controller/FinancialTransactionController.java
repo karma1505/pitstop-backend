@@ -17,7 +17,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/financial-transactions")
+@RequestMapping("/admin/financial-transactions")
 @CrossOrigin(origins = "*")
 public class FinancialTransactionController {
 
@@ -129,6 +129,11 @@ public class FinancialTransactionController {
      */
     @GetMapping("/health")
     public ResponseEntity<String> health() {
-        return ResponseEntity.ok("Financial Transaction API is running");
+        return ResponseEntity.ok("Financial Transaction API is running - " + System.currentTimeMillis());
+    }
+    
+    @GetMapping("/test")
+    public ResponseEntity<String> test() {
+        return ResponseEntity.ok("Test endpoint working!");
     }
 } 

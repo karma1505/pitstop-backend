@@ -46,6 +46,7 @@ public class SecurityConfig {
                     "/admin/reset-password",
                     "/admin/send-login-otp",
                     "/admin/login-with-otp",
+                    "/admin/financial-transactions/**",
                     "/actuator/**"
                 ).permitAll()
                 .anyRequest().authenticated()

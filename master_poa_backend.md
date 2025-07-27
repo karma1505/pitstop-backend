@@ -17,30 +17,149 @@ The implementation follows a phased approach, starting with the simplest feature
 - Amount To Be Collected: ₹45,250
 - Received Today: ₹12,800
 - Spent Today: ₹8,450
+- Net Profit: ₹4,350
 
 **Why First**:
 - No dependencies on other systems
-- Simple data model with basic financial tracking
+- Single table approach for all financial transactions
 - Provides immediate value to garage owners
 - Foundation for revenue analytics
 
 **Required Database Tables**:
-- payments (id, amount, type, date, status, notes)
-- expenses (id, amount, category, date, description)
+- Staff (id, name, email, phone, role, is_active, created_at, updated_at)
+- Customers (id, name, phone, email, address, created_at, updated_at)
+- Vehicles (id, customer_id, registration_number, make, model, year, vin, engine_number, fuel_type, transmission_type, created_at, updated_at)
+- JobCards (id, customer_id, vehicle_id, job_number, description, estimated_cost, actual_cost, status, assigned_to, created_at, updated_at)
+- Transactions (id, amount, transaction_type, transaction_date, description, status, customer_id, vehicle_id, job_card_id, payment_method, expense_category, vendor_name, vendor_contact, reference_number, notes, created_at, updated_at, created_by, updated_by)
 
 **API Endpoints**:
-- GET /api/v1/money-data
-- POST /api/v1/payments
-- POST /api/v1/expenses
-- GET /api/v1/payments/today
-- GET /api/v1/expenses/today
+- GET /api/v1/financial-transactions/money-data
+- GET /api/v1/financial-transactions/money-data?type=income
+- GET /api/v1/financial-transactions/money-data?type=expense
+- GET /api/v1/financial-transactions/money-data?transaction_type=INCOME&date=today
+- GET /api/v1/financial-transactions/money-data?transaction_type=EXPENSE&date=today
+- GET /api/v1/financial-transactions/money-data?page=0&size=20&transaction_type=INCOME&from_date=2024-01-01&to_date=2024-01-31
+- POST /api/v1/financial-transactions/income
+- POST /api/v1/financial-transactions/expense
 
 **Implementation Steps**:
-1. Create Payment and Expense entities
-2. Implement repository interfaces
-3. Create service layer with business logic
-4. Implement controller with endpoints
-5. Add validation and error handling
+1. Create core tables (staff, customers, vehicles, job_cards)
+2. Create FinancialTransaction entity with single table design
+3. Implement repository interfaces with aggregation queries
+4. Create service layer with income/expense business logic
+5. Implement controller with separate income/expense endpoints
+6. Add validation, error handling, and audit trail
+
+**Complete Database Schema for Money Data API**:
+
+```sql
+-- Core tables required for financial transactions
+CREATE TABLE Staff (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    phone VARCHAR(15),
+    role VARCHAR(30) NOT NULL CHECK (role IN ('OWNER', 'MANAGER', 'MECHANIC', 'RECEPTIONIST')),
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE Customers (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(100) NOT NULL,
+    phone VARCHAR(15) NOT NULL UNIQUE,
+    email VARCHAR(100),
+    address TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE Vehicles (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    customer_id UUID NOT NULL,
+    registration_number VARCHAR(20) NOT NULL,
+    make VARCHAR(50),
+    model VARCHAR(50),
+    year INTEGER,
+    vin VARCHAR(17),
+    engine_number VARCHAR(20),
+    fuel_type VARCHAR(20),
+    transmission_type VARCHAR(20),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_vehicles_customer FOREIGN KEY (customer_id) REFERENCES Customers(id)
+);
+
+CREATE TABLE JobCards (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    customer_id UUID NOT NULL,
+    vehicle_id UUID NOT NULL,
+    job_number VARCHAR(20) NOT NULL UNIQUE,
+    description TEXT NOT NULL,
+    estimated_cost DECIMAL(10,2),
+    actual_cost DECIMAL(10,2),
+    status VARCHAR(20) DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED')),
+    assigned_to UUID,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_job_cards_customer FOREIGN KEY (customer_id) REFERENCES Customers(id),
+    CONSTRAINT fk_job_cards_vehicle FOREIGN KEY (vehicle_id) REFERENCES Vehicles(id),
+    CONSTRAINT fk_job_cards_assigned_to FOREIGN KEY (assigned_to) REFERENCES Staff(id)
+);
+
+-- Single table for all financial transactions
+CREATE TABLE Transactions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    amount DECIMAL(10,2) NOT NULL,
+    transaction_type VARCHAR(20) NOT NULL CHECK (transaction_type IN ('INCOME', 'EXPENSE')),
+    transaction_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    description VARCHAR(255) NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'COMPLETED' CHECK (status IN ('PENDING', 'COMPLETED', 'CANCELLED', 'REFUNDED')),
+    
+    -- Income-specific fields (NULL for expenses)
+    customer_id UUID,
+    vehicle_id UUID,
+    job_card_id UUID,
+    payment_method VARCHAR(30) CHECK (payment_method IN ('CASH', 'CARD', 'UPI', 'BANK_TRANSFER', 'CHEQUE')),
+    
+    -- Expense-specific fields (NULL for income)
+    expense_category VARCHAR(50) CHECK (expense_category IN (
+        'UTILITIES', 'SALARY', 'EQUIPMENT', 'SUPPLIES', 'RENT', 
+        'INSURANCE', 'MAINTENANCE', 'MARKETING', 'OFFICE_SUPPLIES', 'OTHER'
+    )),
+    vendor_name VARCHAR(100),
+    vendor_contact VARCHAR(50),
+    
+    -- Common fields
+    reference_number VARCHAR(50),
+    notes TEXT,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_by UUID NOT NULL,
+    updated_by UUID,
+    
+    -- Foreign Key Constraints
+    CONSTRAINT fk_transactions_customer FOREIGN KEY (customer_id) REFERENCES Customers(id),
+    CONSTRAINT fk_transactions_vehicle FOREIGN KEY (vehicle_id) REFERENCES Vehicles(id),
+    CONSTRAINT fk_transactions_job_card FOREIGN KEY (job_card_id) REFERENCES JobCards(id),
+    CONSTRAINT fk_transactions_created_by FOREIGN KEY (created_by) REFERENCES Staff(id),
+    CONSTRAINT fk_transactions_updated_by FOREIGN KEY (updated_by) REFERENCES Staff(id),
+    
+    -- Business Rules
+    CONSTRAINT chk_income_fields CHECK (
+        transaction_type = 'INCOME' AND customer_id IS NOT NULL AND payment_method IS NOT NULL
+        OR transaction_type = 'EXPENSE'
+    ),
+    CONSTRAINT chk_expense_fields CHECK (
+        transaction_type = 'EXPENSE' AND expense_category IS NOT NULL
+        OR transaction_type = 'INCOME'
+    ),
+    CONSTRAINT chk_amount_positive CHECK (amount > 0)
+);
+
+
+```
 
 ---
 
@@ -62,8 +181,8 @@ The implementation follows a phased approach, starting with the simplest feature
 - Essential for business operations
 
 **Required Database Tables**:
-- customers (id, first_name, last_name, email, phone, created_date)
-- customer_reviews (id, customer_id, rating, comment, date)
+- Customers (reuse from Money Data API)
+- CustomerReviews (id, customer_id, rating, comment, review_date, created_at, updated_at)
 
 **API Endpoints**:
 - GET /api/v1/customer-data
@@ -140,8 +259,9 @@ The implementation follows a phased approach, starting with the simplest feature
 - Essential for service tracking
 
 **Required Database Tables**:
-- vehicles (id, registration_number, make, model, customer_id)
-- job_cards (id, vehicle_id, status, created_date, completed_date)
+- Vehicles (reuse from Money Data API)
+- JobCards (reuse from Money Data API)
+- JobCardStatusHistory (id, job_card_id, status, changed_by, changed_at, notes)
 
 **API Endpoints**:
 - GET /api/v1/jobcard-data
@@ -179,8 +299,8 @@ The implementation follows a phased approach, starting with the simplest feature
 - Extends payment tracking capabilities
 
 **Required Database Tables**:
-- payments (reuse from Money Data API)
-- revenue_targets (id, target_amount, period, start_date, end_date)
+- Transactions (reuse from Money Data API)
+- RevenueTargets (id, target_amount, period, start_date, end_date, created_at, updated_at)
 
 **API Endpoints**:
 - GET /api/v1/revenue-analytics
@@ -216,10 +336,10 @@ The implementation follows a phased approach, starting with the simplest feature
 - Integrates all garage management aspects
 
 **Required Database Tables**:
-- vehicles (full vehicle management)
-- workers (id, name, role, is_present, start_time)
-- appointments (id, customer_id, vehicle_id, scheduled_date, status)
-- parts_received (id, part_name, quantity, received_date)
+- Vehicles (reuse from Money Data API)
+- Staff (reuse from Money Data API)
+- Appointments (id, customer_id, vehicle_id, scheduled_date, status, description, created_at, updated_at)
+- PartsReceived (id, part_name, quantity, received_date, supplier, cost, created_at, updated_at)
 
 **API Endpoints**:
 - GET /api/v1/garage-data
@@ -246,6 +366,8 @@ The implementation follows a phased approach, starting with the simplest feature
 - Add audit fields (created_at, updated_at, created_by, updated_by)
 - Use appropriate data types and constraints
 - Implement proper indexing strategies
+- Single financial_transactions table for all income/expense tracking
+- Business rule constraints for data integrity
 
 ### API Design Standards
 - Follow RESTful conventions
@@ -260,6 +382,8 @@ The implementation follows a phased approach, starting with the simplest feature
 - Follow single responsibility principle
 - Implement proper transaction management
 - Add comprehensive logging
+- Separate income and expense business logic in single service
+- Implement aggregation queries for dashboard metrics
 
 ### Security Considerations
 - Implement JWT-based authentication
@@ -324,6 +448,6 @@ The implementation follows a phased approach, starting with the simplest feature
 
 **Total Estimated Time**: 3 weeks
 **Total API Endpoints**: 30+ endpoints
-**Total Database Tables**: 15+ tables
+**Total Database Tables**: 12 tables (with single financial_transactions table)
 
 This phased approach ensures quick wins, builds solid foundations, and delivers comprehensive garage management functionality in a systematic manner. 

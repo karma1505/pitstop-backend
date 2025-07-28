@@ -17,9 +17,9 @@ public class OTPService {
     private OTPRepository otpRepository;
     
     @Autowired
-    private SMSService smsService;
+    private EmailService emailService;
     
-    private static final String OTP_MESSAGE_TEMPLATE = "Your PitStop verification code is $otp$. Valid for 2 minutes.";
+    private static final String OTP_MESSAGE_TEMPLATE = "Your PitStop verification code is %s. Valid for 2 minutes.";
     private static final int OTP_LENGTH = 4;
     private static final int OTP_EXPIRY_MINUTES = 2;
     private static final int RATE_LIMIT_REQUESTS = 5;
@@ -28,24 +28,24 @@ public class OTPService {
     /**
      * Generate and send OTP for forgot password
      */
-    public boolean sendForgotPasswordOTP(String phoneNumber) {
-        return sendOTP(phoneNumber, "FORGOT_PASSWORD");
+    public boolean sendForgotPasswordOTP(String email) {
+        return sendOTP(email, "FORGOT_PASSWORD");
     }
     
     /**
      * Generate and send OTP for login
      */
-    public boolean sendLoginOTP(String phoneNumber) {
-        return sendOTP(phoneNumber, "LOGIN_OTP");
+    public boolean sendLoginOTP(String email) {
+        return sendOTP(email, "LOGIN_OTP");
     }
     
     /**
      * Verify OTP code
      */
-    public boolean verifyOTP(String phoneNumber, String otpCode, String type) {
+    public boolean verifyOTP(String email, String otpCode, String type) {
         try {
-            Optional<OTPCode> otpOptional = otpRepository.findValidOTPByPhoneAndType(
-                phoneNumber, type, LocalDateTime.now());
+            Optional<OTPCode> otpOptional = otpRepository.findValidOTPByEmailAndType(
+                email, type, LocalDateTime.now());
             
             if (otpOptional.isPresent()) {
                 OTPCode otp = otpOptional.get();
@@ -69,10 +69,10 @@ public class OTPService {
     /**
      * Check if user can request OTP (rate limiting)
      */
-    public boolean canRequestOTP(String phoneNumber, String type) {
+    public boolean canRequestOTP(String email, String type) {
         try {
             LocalDateTime since = LocalDateTime.now().minusHours(RATE_LIMIT_HOURS);
-            long recentRequests = otpRepository.countRecentOTPRequests(phoneNumber, type, since);
+            long recentRequests = otpRepository.countRecentEmailOTPRequests(email, type, since);
             return recentRequests < RATE_LIMIT_REQUESTS;
         } catch (Exception e) {
             System.err.println("Error checking rate limit: " + e.getMessage());
@@ -83,17 +83,17 @@ public class OTPService {
     /**
      * Generate and send OTP
      */
-    private boolean sendOTP(String phoneNumber, String type) {
+    private boolean sendOTP(String email, String type) {
         try {
             // Check rate limiting
-            if (!canRequestOTP(phoneNumber, type)) {
-                System.err.println("Rate limit exceeded for phone: " + phoneNumber);
+            if (!canRequestOTP(email, type)) {
+                System.err.println("Rate limit exceeded for email: " + email);
                 return false;
             }
             
-            // Check if SMS service is available
-            if (!smsService.isServiceAvailable()) {
-                System.err.println("SMS service not available");
+            // Check if email service is available
+            if (!emailService.isServiceAvailable()) {
+                System.err.println("Email service not available");
                 return false;
             }
             
@@ -102,15 +102,15 @@ public class OTPService {
             LocalDateTime expiresAt = LocalDateTime.now().plusMinutes(OTP_EXPIRY_MINUTES);
             
             // Save OTP to database
-            OTPCode otp = new OTPCode(phoneNumber, otpCode, type, expiresAt);
+            OTPCode otp = new OTPCode(email, otpCode, type, expiresAt);
             otpRepository.save(otp);
             
-            // Send SMS
-            String message = OTP_MESSAGE_TEMPLATE.replace("$otp$", otpCode);
-            boolean smsSent = smsService.sendOTP(phoneNumber, message);
+            // Send email
+            String message = String.format(OTP_MESSAGE_TEMPLATE, otpCode);
+            boolean emailSent = emailService.sendOTP(email, message);
             
-            if (!smsSent) {
-                // If SMS failed, delete the OTP from database
+            if (!emailSent) {
+                // If email failed, delete the OTP from database
                 otpRepository.delete(otp);
                 return false;
             }

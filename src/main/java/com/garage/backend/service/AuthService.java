@@ -135,12 +135,12 @@ public class AuthService {
     }
 
     /**
-     * Reset password using phone number
+     * Reset password using email
      */
-    public boolean resetPassword(String phoneNumber, String newPassword) {
+    public boolean resetPassword(String email, String newPassword) {
         try {
-            // Find user by phone number
-            User user = userRepository.findByMobileNumber(phoneNumber).orElse(null);
+            // Find user by email
+            User user = userRepository.findByEmail(email).orElse(null);
             if (user == null) {
                 return false;
             }
@@ -156,14 +156,14 @@ public class AuthService {
     }
 
     /**
-     * Login with OTP using phone number
+     * Login with OTP using email
      */
-    public AuthResponse loginWithOTP(String phoneNumber) {
+    public AuthResponse loginWithOTP(String email) {
         try {
-            // Find user by phone number
-            User user = userRepository.findByMobileNumber(phoneNumber).orElse(null);
+            // Find user by email
+            User user = userRepository.findByEmail(email).orElse(null);
             if (user == null) {
-                return AuthResponse.error("User not found with this phone number");
+                return AuthResponse.error("User not found with this email");
             }
 
             // Load user details

@@ -83,14 +83,12 @@
             <version>${jwt.version}</version>
             <scope>runtime</scope>
         </dependency>
-
-        <!-- AWS SDK -->
+        <!-- Spring Boot Mail Starter -->
         <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>s3</artifactId>
-            <version>2.21.0</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
-
+        
         <!-- Utilities -->
         <dependency>
             <groupId>org.apache.commons</groupId>

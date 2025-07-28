@@ -3,9 +3,9 @@ spring:
     name: garage-backend
   
   datasource:
-    url: jdbc:postgresql://localhost:5432/garage_db
-    username: garage_app
-    password: karmakaze69
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/garage_db}
+    username: ${DB_USERNAME:garage_app}
+    password: ${DB_PASSWORD:karmakaze69}
     driver-class-name: org.postgresql.Driver
   
   jpa:
@@ -18,21 +18,35 @@ spring:
         format_sql: true
   
   flyway:
-    enabled: false
+    enabled: true
     baseline-on-migrate: true
     clean-disabled: false
     locations: classpath:db/migration
   
   security:
     jwt:
-      secret: your-256-bit-secret-key-here-change-in-production
-      expiration: 86400000 # 24 hours in milliseconds
-      refresh-expiration: 604800000 # 7 days in milliseconds
+      secret: ${JWT_SECRET:your-256-bit-secret-key-here-change-in-production}
+      expiration: ${JWT_EXPIRATION:86400000} # 24 hours in milliseconds
+      refresh-expiration: ${JWT_REFRESH_EXPIRATION:604800000} # 7 days in milliseconds
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: karmanyasingh8@gmail.com
+    password: ${GMAIL_APP_PASSWORD:your_gmail_app_password_here}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          timeout: 5000
+          connectiontimeout: 5000
 
 server:
-  port: 8080
+  port: ${SERVER_PORT:8080}
   servlet:
-    context-path: /api/v1
+    context-path: ${SERVER_CONTEXT_PATH:/api/v1}
 
 management:
   endpoints:
@@ -42,14 +56,17 @@ management:
   endpoint:
     health:
       show-details: always
+  health:
+    mail:
+      enabled: true
 
 logging:
   level:
-    com.garage.backend: DEBUG
-    org.springframework.security: DEBUG
-    org.hibernate.SQL: DEBUG
+    com.garage.backend: ${LOGGING_LEVEL:DEBUG}
+    org.springframework.security: ${LOGGING_LEVEL:DEBUG}
+    org.hibernate.SQL: ${LOGGING_LEVEL:DEBUG}
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-    org.flywaydb: DEBUG
+    org.flywaydb: ${LOGGING_LEVEL:DEBUG}
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
 

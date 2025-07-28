@@ -56,12 +56,12 @@ public class AuthController {
     @PostMapping("/forgot-password")
     public ResponseEntity<Map<String, Object>> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
         try {
-            boolean otpSent = otpService.sendForgotPasswordOTP(request.getPhoneNumber());
+            boolean otpSent = otpService.sendForgotPasswordOTP(request.getEmail());
             
             Map<String, Object> response = new HashMap<>();
             if (otpSent) {
                 response.put("success", true);
-                response.put("message", "OTP sent successfully to your phone number");
+                response.put("message", "OTP sent successfully to your email");
             } else {
                 response.put("success", false);
                 response.put("message", "Failed to send OTP. Please try again later.");
@@ -79,7 +79,7 @@ public class AuthController {
     @PostMapping("/verify-otp")
     public ResponseEntity<Map<String, Object>> verifyOTP(@Valid @RequestBody OTPVerificationRequest request) {
         try {
-            boolean isValid = otpService.verifyOTP(request.getPhoneNumber(), request.getOtpCode(), request.getType());
+            boolean isValid = otpService.verifyOTP(request.getEmail(), request.getOtpCode(), request.getType());
             
             Map<String, Object> response = new HashMap<>();
             if (isValid) {
@@ -103,7 +103,7 @@ public class AuthController {
     public ResponseEntity<Map<String, Object>> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
         try {
             // First verify the OTP
-            boolean otpValid = otpService.verifyOTP(request.getPhoneNumber(), request.getOtpCode(), "FORGOT_PASSWORD");
+            boolean otpValid = otpService.verifyOTP(request.getEmail(), request.getOtpCode(), "FORGOT_PASSWORD");
             
             if (!otpValid) {
                 Map<String, Object> response = new HashMap<>();
@@ -121,7 +121,7 @@ public class AuthController {
             }
             
             // Reset password using AuthService
-            boolean passwordReset = authService.resetPassword(request.getPhoneNumber(), request.getNewPassword());
+            boolean passwordReset = authService.resetPassword(request.getEmail(), request.getNewPassword());
             
             Map<String, Object> response = new HashMap<>();
             if (passwordReset) {
@@ -144,12 +144,12 @@ public class AuthController {
     @PostMapping("/send-login-otp")
     public ResponseEntity<Map<String, Object>> sendLoginOTP(@Valid @RequestBody ForgotPasswordRequest request) {
         try {
-            boolean otpSent = otpService.sendLoginOTP(request.getPhoneNumber());
+            boolean otpSent = otpService.sendLoginOTP(request.getEmail());
             
             Map<String, Object> response = new HashMap<>();
             if (otpSent) {
                 response.put("success", true);
-                response.put("message", "Login OTP sent successfully to your phone number");
+                response.put("message", "Login OTP sent successfully to your email");
             } else {
                 response.put("success", false);
                 response.put("message", "Failed to send OTP. Please try again later.");
@@ -168,14 +168,14 @@ public class AuthController {
     public ResponseEntity<AuthResponse> loginWithOTP(@Valid @RequestBody OTPVerificationRequest request) {
         try {
             // Verify OTP first
-            boolean otpValid = otpService.verifyOTP(request.getPhoneNumber(), request.getOtpCode(), "LOGIN_OTP");
+            boolean otpValid = otpService.verifyOTP(request.getEmail(), request.getOtpCode(), "LOGIN_OTP");
             
             if (!otpValid) {
                 return ResponseEntity.badRequest().body(AuthResponse.error("Invalid OTP or OTP has expired"));
             }
             
             // Login with OTP using AuthService
-            AuthResponse response = authService.loginWithOTP(request.getPhoneNumber());
+            AuthResponse response = authService.loginWithOTP(request.getEmail());
             
             if (response.isSuccess()) {
                 return ResponseEntity.ok(response);

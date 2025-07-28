@@ -74,8 +74,6 @@ ehthumbs.db
 Desktop.ini
 
 # Application specific
-application-prod.yml
-application-local.yml
 *.env
 
 # Logs

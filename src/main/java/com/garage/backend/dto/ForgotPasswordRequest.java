@@ -1,27 +1,27 @@
 package com.garage.backend.dto;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 
 public class ForgotPasswordRequest {
     
-    @NotBlank(message = "Phone number is required")
-    @Pattern(regexp = "^[0-9]{10,15}$", message = "Invalid phone number format")
-    private String phoneNumber;
+    @NotBlank(message = "Email is required")
+    @Email(message = "Invalid email format")
+    private String email;
     
     // Constructors
     public ForgotPasswordRequest() {}
     
-    public ForgotPasswordRequest(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public ForgotPasswordRequest(String email) {
+        this.email = email;
     }
     
     // Getters and Setters
-    public String getPhoneNumber() {
-        return phoneNumber;
+    public String getEmail() {
+        return email;
     }
     
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public void setEmail(String email) {
+        this.email = email;
     }
 } 

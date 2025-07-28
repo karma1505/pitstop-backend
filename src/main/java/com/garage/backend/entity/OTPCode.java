@@ -19,8 +19,8 @@ public class OTPCode {
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private User user;
     
-    @Column(name = "phone_number", nullable = false)
-    private String phoneNumber;
+    @Column(name = "email_id", nullable = false)
+    private String emailId;
     
     @Column(name = "otp_code", nullable = false)
     private String otpCode;
@@ -40,17 +40,17 @@ public class OTPCode {
     // Constructors
     public OTPCode() {}
     
-    public OTPCode(String phoneNumber, String otpCode, String type, LocalDateTime expiresAt) {
-        this.phoneNumber = phoneNumber;
+    public OTPCode(String emailId, String otpCode, String type, LocalDateTime expiresAt) {
+        this.emailId = emailId;
         this.otpCode = otpCode;
         this.type = type;
         this.expiresAt = expiresAt;
         this.createdAt = LocalDateTime.now();
     }
     
-    public OTPCode(UUID userId, String phoneNumber, String otpCode, String type, LocalDateTime expiresAt) {
+    public OTPCode(UUID userId, String emailId, String otpCode, String type, LocalDateTime expiresAt) {
         this.userId = userId;
-        this.phoneNumber = phoneNumber;
+        this.emailId = emailId;
         this.otpCode = otpCode;
         this.type = type;
         this.expiresAt = expiresAt;
@@ -82,12 +82,12 @@ public class OTPCode {
         this.user = user;
     }
     
-    public String getPhoneNumber() {
-        return phoneNumber;
+    public String getEmailId() {
+        return emailId;
     }
     
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public void setEmailId(String emailId) {
+        this.emailId = emailId;
     }
     
     public String getOtpCode() {

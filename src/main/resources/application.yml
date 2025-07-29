@@ -3,9 +3,9 @@ spring:
     name: garage-backend
   
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/garage_db}
-    username: ${DB_USERNAME:garage_app}
-    password: ${DB_PASSWORD:karmakaze69}
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
   
   jpa:
@@ -25,15 +25,15 @@ spring:
   
   security:
     jwt:
-      secret: ${JWT_SECRET:your-256-bit-secret-key-here-change-in-production}
-      expiration: ${JWT_EXPIRATION:86400000} # 24 hours in milliseconds
-      refresh-expiration: ${JWT_REFRESH_EXPIRATION:604800000} # 7 days in milliseconds
+      secret: ${JWT_SECRET}
+      expiration: ${JWT_EXPIRATION}
+      refresh-expiration: ${JWT_REFRESH_EXPIRATION}
 
   mail:
     host: smtp.gmail.com
     port: 587
-    username: karmanyasingh8@gmail.com
-    password: ${GMAIL_APP_PASSWORD:your_gmail_app_password_here}
+    username: ${GMAIL_USERNAME}
+    password: ${GMAIL_APP_PASSWORD}
     properties:
       mail:
         smtp:
@@ -44,9 +44,9 @@ spring:
           connectiontimeout: 5000
 
 server:
-  port: ${SERVER_PORT:8080}
+  port: ${SERVER_PORT}
   servlet:
-    context-path: ${SERVER_CONTEXT_PATH:/api/v1}
+    context-path: ${SERVER_CONTEXT_PATH}
 
 management:
   endpoints:
@@ -62,16 +62,15 @@ management:
 
 logging:
   level:
-    com.garage.backend: ${LOGGING_LEVEL:DEBUG}
-    org.springframework.security: ${LOGGING_LEVEL:DEBUG}
-    org.hibernate.SQL: ${LOGGING_LEVEL:DEBUG}
+    com.garage.backend: ${LOGGING_LEVEL}
+    org.springframework.security: ${LOGGING_LEVEL}
+    org.hibernate.SQL: ${LOGGING_LEVEL}
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-    org.flywaydb: ${LOGGING_LEVEL:DEBUG}
+    org.flywaydb: ${LOGGING_LEVEL}
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
 
-# AWS Configuration (for future use)
 aws:
-  region: us-east-1
+  region: ${AWS_REGION}
   s3:
-    bucket-name: garage-management-bucket 
+    bucket-name: ${AWS_S3_BUCKET_NAME} 

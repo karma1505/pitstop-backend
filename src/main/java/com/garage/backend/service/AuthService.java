@@ -160,18 +160,26 @@ public class AuthService {
      */
     public AuthResponse loginWithOTP(String email) {
         try {
+            System.out.println("=== AuthService loginWithOTP Debug ===");
+            System.out.println("Email: " + email);
+            
             // Find user by email
             User user = userRepository.findByEmail(email).orElse(null);
             if (user == null) {
+                System.out.println("User not found for email: " + email);
                 return AuthResponse.error("User not found with this email");
             }
+            
+            System.out.println("User found: " + user.getFirstName() + " " + user.getLastName());
 
             // Load user details
             UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
+            System.out.println("UserDetails loaded successfully");
 
             // Generate tokens
             String token = jwtUtil.generateToken(userDetails);
             String refreshToken = jwtUtil.generateRefreshToken(userDetails);
+            System.out.println("Tokens generated successfully");
 
             // Create user info
             AuthResponse.UserInfo userInfo = new AuthResponse.UserInfo(
@@ -188,10 +196,15 @@ public class AuthService {
                     user.getPincode(),
                     user.getCreatedAt()
             );
+            System.out.println("UserInfo created successfully");
 
-            return AuthResponse.success(token, refreshToken, jwtUtil.getExpiration(), userInfo);
+            AuthResponse response = AuthResponse.success(token, refreshToken, jwtUtil.getExpiration(), userInfo);
+            System.out.println("AuthResponse created successfully");
+            return response;
 
         } catch (Exception e) {
+            System.err.println("Error in loginWithOTP: " + e.getMessage());
+            e.printStackTrace();
             return AuthResponse.error("Login failed: " + e.getMessage());
         }
     }

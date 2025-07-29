@@ -22,8 +22,9 @@ public class OTPService {
     private static final String OTP_MESSAGE_TEMPLATE = "Your PitStop verification code is %s. Valid for 2 minutes.";
     private static final int OTP_LENGTH = 4;
     private static final int OTP_EXPIRY_MINUTES = 2;
-    private static final int RATE_LIMIT_REQUESTS = 5;
-    private static final int RATE_LIMIT_HOURS = 1;
+    // Removed rate limiting constants for testing phase
+    // private static final int RATE_LIMIT_REQUESTS = 5;
+    // private static final int RATE_LIMIT_HOURS = 1;
     
     /**
      * Generate and send OTP for forgot password
@@ -44,52 +45,72 @@ public class OTPService {
      */
     public boolean verifyOTP(String email, String otpCode, String type) {
         try {
+            System.out.println("=== OTP Verification Debug ===");
+            System.out.println("Email: " + email);
+            System.out.println("OTP Code: " + otpCode);
+            System.out.println("Type: " + type);
+            System.out.println("Current Time: " + LocalDateTime.now());
+            
             Optional<OTPCode> otpOptional = otpRepository.findValidOTPByEmailAndType(
                 email, type, LocalDateTime.now());
             
             if (otpOptional.isPresent()) {
                 OTPCode otp = otpOptional.get();
+                System.out.println("Found OTP in DB:");
+                System.out.println("- DB OTP Code: " + otp.getOtpCode());
+                System.out.println("- DB Type: " + otp.getType());
+                System.out.println("- DB Expires At: " + otp.getExpiresAt());
+                System.out.println("- DB Is Used: " + otp.getIsUsed());
+                System.out.println("- OTP Matches: " + otp.getOtpCode().equals(otpCode));
+                System.out.println("- Not Used: " + !otp.getIsUsed());
                 
                 // Check if OTP matches and is not used
                 if (otp.getOtpCode().equals(otpCode) && !otp.getIsUsed()) {
                     // Mark OTP as used
                     otp.setIsUsed(true);
                     otpRepository.save(otp);
+                    System.out.println("OTP verification SUCCESS");
                     return true;
+                } else {
+                    System.out.println("OTP verification FAILED - Code mismatch or already used");
                 }
+            } else {
+                System.out.println("No valid OTP found in database");
             }
             
             return false;
         } catch (Exception e) {
             System.err.println("Error verifying OTP: " + e.getMessage());
+            e.printStackTrace();
             return false;
         }
     }
     
-    /**
-     * Check if user can request OTP (rate limiting)
-     */
-    public boolean canRequestOTP(String email, String type) {
-        try {
-            LocalDateTime since = LocalDateTime.now().minusHours(RATE_LIMIT_HOURS);
-            long recentRequests = otpRepository.countRecentEmailOTPRequests(email, type, since);
-            return recentRequests < RATE_LIMIT_REQUESTS;
-        } catch (Exception e) {
-            System.err.println("Error checking rate limit: " + e.getMessage());
-            return false;
-        }
-    }
+    // Removed canRequestOTP method for testing phase
+    // /**
+    //  * Check if user can request OTP (rate limiting)
+    //  */
+    // public boolean canRequestOTP(String email, String type) {
+    //     try {
+    //         LocalDateTime since = LocalDateTime.now().minusHours(RATE_LIMIT_HOURS);
+    //         long recentRequests = otpRepository.countRecentEmailOTPRequests(email, type, since);
+    //         return recentRequests < RATE_LIMIT_REQUESTS;
+    //     } catch (Exception e) {
+    //         System.err.println("Error checking rate limit: " + e.getMessage());
+    //         return false;
+    //     }
+    // }
     
     /**
      * Generate and send OTP
      */
     private boolean sendOTP(String email, String type) {
         try {
-            // Check rate limiting
-            if (!canRequestOTP(email, type)) {
-                System.err.println("Rate limit exceeded for email: " + email);
-                return false;
-            }
+            // Removed rate limiting check for testing phase
+            // if (!canRequestOTP(email, type)) {
+            //     System.err.println("Rate limit exceeded for email: " + email);
+            //     return false;
+            // }
             
             // Check if email service is available
             if (!emailService.isServiceAvailable()) {

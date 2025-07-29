@@ -79,7 +79,14 @@ public class AuthController {
     @PostMapping("/verify-otp")
     public ResponseEntity<Map<String, Object>> verifyOTP(@Valid @RequestBody OTPVerificationRequest request) {
         try {
+            System.out.println("=== Controller Debug ===");
+            System.out.println("Received email: " + request.getEmail());
+            System.out.println("Received OTP code: " + request.getOtpCode());
+            System.out.println("Received type: " + request.getType());
+            
             boolean isValid = otpService.verifyOTP(request.getEmail(), request.getOtpCode(), request.getType());
+            
+            System.out.println("OTP verification result: " + isValid);
             
             Map<String, Object> response = new HashMap<>();
             if (isValid) {
@@ -92,6 +99,8 @@ public class AuthController {
             
             return ResponseEntity.ok(response);
         } catch (Exception e) {
+            System.err.println("Controller error: " + e.getMessage());
+            e.printStackTrace();
             Map<String, Object> response = new HashMap<>();
             response.put("success", false);
             response.put("message", "An error occurred while verifying OTP");
@@ -167,8 +176,14 @@ public class AuthController {
     @PostMapping("/login-with-otp")
     public ResponseEntity<AuthResponse> loginWithOTP(@Valid @RequestBody OTPVerificationRequest request) {
         try {
+            System.out.println("=== Login with OTP Debug ===");
+            System.out.println("Email: " + request.getEmail());
+            System.out.println("OTP Code: " + request.getOtpCode());
+            
             // Verify OTP first
             boolean otpValid = otpService.verifyOTP(request.getEmail(), request.getOtpCode(), "LOGIN_OTP");
+            
+            System.out.println("OTP Valid: " + otpValid);
             
             if (!otpValid) {
                 return ResponseEntity.badRequest().body(AuthResponse.error("Invalid OTP or OTP has expired"));
@@ -177,12 +192,18 @@ public class AuthController {
             // Login with OTP using AuthService
             AuthResponse response = authService.loginWithOTP(request.getEmail());
             
+            System.out.println("Auth Response Success: " + response.isSuccess());
+            System.out.println("Auth Response Token: " + (response.getToken() != null ? "Present" : "Null"));
+            System.out.println("Auth Response User Info: " + (response.getUserInfo() != null ? "Present" : "Null"));
+            
             if (response.isSuccess()) {
                 return ResponseEntity.ok(response);
             } else {
                 return ResponseEntity.badRequest().body(response);
             }
         } catch (Exception e) {
+            System.err.println("Login with OTP error: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.badRequest().body(AuthResponse.error("An error occurred during OTP login"));
         }
     }

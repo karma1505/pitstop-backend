@@ -33,7 +33,7 @@ public class OTPService {
         return sendOTP(email, "FORGOT_PASSWORD");
     }
     
-    /**
+    /**x
      * Generate and send OTP for login
      */
     public boolean sendLoginOTP(String email) {
@@ -41,41 +41,23 @@ public class OTPService {
     }
     
     /**
-     * Verify OTP code
+     * Verify OTP
      */
     public boolean verifyOTP(String email, String otpCode, String type) {
         try {
-            System.out.println("=== OTP Verification Debug ===");
-            System.out.println("Email: " + email);
-            System.out.println("OTP Code: " + otpCode);
-            System.out.println("Type: " + type);
-            System.out.println("Current Time: " + LocalDateTime.now());
-            
             Optional<OTPCode> otpOptional = otpRepository.findValidOTPByEmailAndType(
                 email, type, LocalDateTime.now());
             
             if (otpOptional.isPresent()) {
                 OTPCode otp = otpOptional.get();
-                System.out.println("Found OTP in DB:");
-                System.out.println("- DB OTP Code: " + otp.getOtpCode());
-                System.out.println("- DB Type: " + otp.getType());
-                System.out.println("- DB Expires At: " + otp.getExpiresAt());
-                System.out.println("- DB Is Used: " + otp.getIsUsed());
-                System.out.println("- OTP Matches: " + otp.getOtpCode().equals(otpCode));
-                System.out.println("- Not Used: " + !otp.getIsUsed());
                 
                 // Check if OTP matches and is not used
                 if (otp.getOtpCode().equals(otpCode) && !otp.getIsUsed()) {
                     // Mark OTP as used
                     otp.setIsUsed(true);
                     otpRepository.save(otp);
-                    System.out.println("OTP verification SUCCESS");
                     return true;
-                } else {
-                    System.out.println("OTP verification FAILED - Code mismatch or already used");
                 }
-            } else {
-                System.out.println("No valid OTP found in database");
             }
             
             return false;

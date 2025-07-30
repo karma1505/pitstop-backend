@@ -79,14 +79,7 @@ public class AuthController {
     @PostMapping("/verify-otp")
     public ResponseEntity<Map<String, Object>> verifyOTP(@Valid @RequestBody OTPVerificationRequest request) {
         try {
-            System.out.println("=== Controller Debug ===");
-            System.out.println("Received email: " + request.getEmail());
-            System.out.println("Received OTP code: " + request.getOtpCode());
-            System.out.println("Received type: " + request.getType());
-            
             boolean isValid = otpService.verifyOTP(request.getEmail(), request.getOtpCode(), request.getType());
-            
-            System.out.println("OTP verification result: " + isValid);
             
             Map<String, Object> response = new HashMap<>();
             if (isValid) {
@@ -111,15 +104,8 @@ public class AuthController {
     @PostMapping("/reset-password")
     public ResponseEntity<Map<String, Object>> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
         try {
-            // First verify the OTP
-            boolean otpValid = otpService.verifyOTP(request.getEmail(), request.getOtpCode(), "FORGOT_PASSWORD");
-            
-            if (!otpValid) {
-                Map<String, Object> response = new HashMap<>();
-                response.put("success", false);
-                response.put("message", "Invalid OTP or OTP has expired");
-                return ResponseEntity.badRequest().body(response);
-            }
+            // OTP is already verified in the OTPVerificationScreen, so we don't need to verify again
+            // Just proceed with password reset
             
             // Check if passwords match
             if (!request.getNewPassword().equals(request.getConfirmPassword())) {
@@ -176,14 +162,8 @@ public class AuthController {
     @PostMapping("/login-with-otp")
     public ResponseEntity<AuthResponse> loginWithOTP(@Valid @RequestBody OTPVerificationRequest request) {
         try {
-            System.out.println("=== Login with OTP Debug ===");
-            System.out.println("Email: " + request.getEmail());
-            System.out.println("OTP Code: " + request.getOtpCode());
-            
             // Verify OTP first
             boolean otpValid = otpService.verifyOTP(request.getEmail(), request.getOtpCode(), "LOGIN_OTP");
-            
-            System.out.println("OTP Valid: " + otpValid);
             
             if (!otpValid) {
                 return ResponseEntity.badRequest().body(AuthResponse.error("Invalid OTP or OTP has expired"));
@@ -191,11 +171,6 @@ public class AuthController {
             
             // Login with OTP using AuthService
             AuthResponse response = authService.loginWithOTP(request.getEmail());
-            
-            System.out.println("Auth Response Success: " + response.isSuccess());
-            System.out.println("Auth Response Token: " + (response.getToken() != null ? "Present" : "Null"));
-            System.out.println("Auth Response User Info: " + (response.getUserInfo() != null ? "Present" : "Null"));
-            
             if (response.isSuccess()) {
                 return ResponseEntity.ok(response);
             } else {

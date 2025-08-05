@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
 @EnableJpaAuditing
-@EnableJpaRepositories(basePackages = "com.garage.backend.repository")
+@EnableJpaRepositories(basePackages = "com.garage.backend")
 public class PitStopBackendApplication {
 
     public static void main(String[] args) {

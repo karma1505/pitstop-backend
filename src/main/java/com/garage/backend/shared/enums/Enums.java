@@ -28,7 +28,9 @@ public class Enums {
         CARD,
         UPI,
         BANK_TRANSFER,
-        CHEQUE
+        CHEQUE,
+        CREDIT_CARD,
+        DEBIT_CARD
     }
 
     /**

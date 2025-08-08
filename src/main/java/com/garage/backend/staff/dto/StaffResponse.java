@@ -1,76 +1,37 @@
-package com.garage.backend.staff.entity;
+package com.garage.backend.staff.dto;
 
 import com.garage.backend.shared.enums.Enums;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Entity
-@Table(name = "Staff")
-@EntityListeners(AuditingEntityListener.class)
-public class Staff {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "id", columnDefinition = "UUID")
+public class StaffResponse {
     private UUID id;
-
-    @NotNull(message = "Garage ID is required")
-    @Column(name = "garage_id", nullable = false, columnDefinition = "UUID")
     private UUID garageId;
-
-    @NotBlank(message = "First name is required")
-    @Size(min = 2, max = 50, message = "First name must be between 2 and 50 characters")
-    @Column(name = "first_name", nullable = false)
     private String firstName;
-
-    @Size(max = 50, message = "Last name must not exceed 50 characters")
-    @Column(name = "last_name")
     private String lastName;
-
-    @NotBlank(message = "Mobile number is required")
-    @Pattern(regexp = "^[0-9]{10,11}$", message = "Mobile number must be 10-11 digits")
-    @Column(name = "mobile_number", nullable = false)
     private String mobileNumber;
-
-    @Size(max = 12, message = "Aadhar number must not exceed 12 characters")
-    @Column(name = "aadhar_number")
     private String aadharNumber;
-
-    @NotNull(message = "Role is required")
-    @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false)
     private Enums.StaffRole role;
-
-    @Column(name = "is_active")
-    private Boolean isActive = true;
-
-    @Column(name = "jobs_completed")
-    private Integer jobsCompleted = 0;
-
-    @CreatedDate
-    @Column(name = "created_at", nullable = false, updatable = false)
+    private Boolean isActive;
+    private Integer jobsCompleted;
     private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     // Constructors
-    public Staff() {}
+    public StaffResponse() {}
 
-    public Staff(UUID garageId, String firstName, String lastName, String mobileNumber, String aadharNumber, Enums.StaffRole role) {
-        this.garageId = garageId;
+    public StaffResponse(UUID id, String firstName, String lastName, String mobileNumber, String aadharNumber,
+                        Enums.StaffRole role, Boolean isActive, Integer jobsCompleted, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.mobileNumber = mobileNumber;
         this.aadharNumber = aadharNumber;
         this.role = role;
+        this.isActive = isActive;
+        this.jobsCompleted = jobsCompleted;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     // Getters and Setters
@@ -164,18 +125,18 @@ public class Staff {
 
     @Override
     public String toString() {
-        return "Staff{" +
+        return "StaffResponse{" +
                 "id=" + id +
                 ", garageId=" + garageId +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", mobileNumber='" + mobileNumber + '\'' +
                 ", aadharNumber='" + aadharNumber + '\'' +
-                ", role='" + role + '\'' +
+                ", role=" + role +
                 ", isActive=" + isActive +
                 ", jobsCompleted=" + jobsCompleted +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';
     }
-} 
+}

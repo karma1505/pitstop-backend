@@ -22,23 +22,11 @@ public interface GarageRepository extends JpaRepository<Garage, UUID> {
     // Find by GST number
     Optional<Garage> findByGstNumber(String gstNumber);
 
-    // Find by phone
-    Optional<Garage> findByPhone(String phone);
-
-    // Find by email
-    Optional<Garage> findByEmail(String email);
-
-    // Find by website
-    List<Garage> findByWebsite(String website);
+    // Find by website URL
+    List<Garage> findByWebsiteUrl(String websiteUrl);
 
     // Find active garages
     List<Garage> findByIsActiveTrue();
-
-    // Find by timezone
-    List<Garage> findByTimezone(String timezone);
-
-    // Find by currency
-    List<Garage> findByCurrency(String currency);
 
     // Check if business registration number exists
     boolean existsByBusinessRegistrationNumber(String businessRegistrationNumber);
@@ -46,30 +34,22 @@ public interface GarageRepository extends JpaRepository<Garage, UUID> {
     // Check if GST number exists
     boolean existsByGstNumber(String gstNumber);
 
-    // Check if phone exists
-    boolean existsByPhone(String phone);
-
-    // Check if email exists
-    boolean existsByEmail(String email);
-
     // Custom query to find garages by multiple criteria
     @Query("SELECT g FROM Garage g WHERE " +
            "(:garageName IS NULL OR g.garageName LIKE %:garageName%) AND " +
-           "(:phone IS NULL OR g.phone = :phone) AND " +
-           "(:email IS NULL OR g.email = :email) AND " +
-           "(:timezone IS NULL OR g.timezone = :timezone) AND " +
-           "(:currency IS NULL OR g.currency = :currency) AND " +
+           "(:websiteUrl IS NULL OR g.websiteUrl = :websiteUrl) AND " +
            "(:isActive IS NULL OR g.isActive = :isActive)")
     List<Garage> findGaragesByCriteria(@Param("garageName") String garageName,
-                                     @Param("phone") String phone,
-                                     @Param("email") String email,
-                                     @Param("timezone") String timezone,
-                                     @Param("currency") String currency,
+                                     @Param("websiteUrl") String websiteUrl,
                                      @Param("isActive") Boolean isActive);
 
-    // Find garages by website containing text
-    List<Garage> findByWebsiteContainingIgnoreCase(String website);
+    // Find garages by website URL containing text
+    List<Garage> findByWebsiteUrlContainingIgnoreCase(String websiteUrl);
 
     // Find recent garages
     List<Garage> findTop10ByOrderByCreatedAtDesc();
+
+    // Find garage by user email (joins with User table)
+    @Query("SELECT g FROM Garage g JOIN User u ON g.createdBy = u.id WHERE u.email = :userEmail")
+    Optional<Garage> findByUserEmail(@Param("userEmail") String userEmail);
 }

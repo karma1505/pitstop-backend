@@ -15,8 +15,8 @@ public interface AddressesRepository extends JpaRepository<Addresses, UUID> {
     // Find addresses by city and state
     List<Addresses> findByCityAndState(String city, String state);
 
-    // Find addresses by postal code
-    List<Addresses> findByPostalCode(String postalCode);
+    // Find addresses by pincode
+    List<Addresses> findByPincode(String pincode);
 
     // Find addresses by country
     List<Addresses> findByCountry(String country);
@@ -37,6 +37,9 @@ public interface AddressesRepository extends JpaRepository<Addresses, UUID> {
                                            @Param("country") String country);
 
     // Check if address exists with same details
-    boolean existsByStreetAddressAndCityAndStateAndPostalCodeAndCountry(
-            String streetAddress, String city, String state, String postalCode, String country);
+    boolean existsByAddressLine1AndCityAndStateAndPincodeAndCountry(
+            String addressLine1, String city, String state, String pincode, String country);
+
+    // Find addresses by garage ID
+    List<Addresses> findByGarageId(UUID garageId);
 }

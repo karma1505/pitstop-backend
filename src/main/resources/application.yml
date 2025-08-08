@@ -47,6 +47,14 @@ server:
   port: ${SERVER_PORT}
   servlet:
     context-path: ${SERVER_CONTEXT_PATH}
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: never
+    include-exception: false
+  mvc:
+    throw-exception-if-no-handler-found: true
+    static-path-pattern: /static/**
 
 management:
   endpoints:

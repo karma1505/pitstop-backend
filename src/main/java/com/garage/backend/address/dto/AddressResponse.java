@@ -1,76 +1,35 @@
-package com.garage.backend.address.entity;
-
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+package com.garage.backend.address.dto;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Entity
-@Table(name = "Addresses")
-@EntityListeners(AuditingEntityListener.class)
-public class Addresses {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "id", columnDefinition = "UUID")
+public class AddressResponse {
     private UUID id;
-
-    @Column(name = "garage_id", columnDefinition = "UUID")
     private UUID garageId;
-
-    @NotBlank(message = "Address line 1 is required")
-    @Size(max = 255, message = "Address line 1 must not exceed 255 characters")
-    @Column(name = "address_line1", nullable = false)
     private String addressLine1;
-
-    @Size(max = 255, message = "Address line 2 must not exceed 255 characters")
-    @Column(name = "address_line2")
     private String addressLine2;
-
-    @NotBlank(message = "City is required")
-    @Size(max = 100, message = "City must not exceed 100 characters")
-    @Column(name = "city", nullable = false)
     private String city;
-
-    @NotBlank(message = "State is required")
-    @Size(max = 100, message = "State must not exceed 100 characters")
-    @Column(name = "state", nullable = false)
     private String state;
-
-    @NotBlank(message = "Pincode is required")
-    @Size(min = 6, max = 6, message = "Pincode must be exactly 6 digits")
-    @Column(name = "pincode", nullable = false)
     private String pincode;
-
-    @NotBlank(message = "Country is required")
-    @Size(max = 100, message = "Country must not exceed 100 characters")
-    @Column(name = "country", nullable = false)
     private String country;
-
-    @CreatedDate
-    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     // Constructors
-    public Addresses() {}
+    public AddressResponse() {}
 
-    public Addresses(UUID garageId, String addressLine1, String addressLine2, String city, String state, String pincode, String country) {
-        this.garageId = garageId;
+    public AddressResponse(UUID id, String addressLine1, String addressLine2,
+                          String city, String state, String pincode, String country,
+                          LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
         this.addressLine1 = addressLine1;
         this.addressLine2 = addressLine2;
         this.city = city;
         this.state = state;
         this.pincode = pincode;
         this.country = country;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     // Getters and Setters
@@ -156,7 +115,7 @@ public class Addresses {
 
     @Override
     public String toString() {
-        return "Addresses{" +
+        return "AddressResponse{" +
                 "id=" + id +
                 ", garageId=" + garageId +
                 ", addressLine1='" + addressLine1 + '\'' +

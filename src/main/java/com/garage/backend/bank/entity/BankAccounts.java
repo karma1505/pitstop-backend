@@ -50,9 +50,6 @@ public class BankAccounts {
     @Column(name = "account_type", nullable = false)
     private String accountType;
 
-    @NotNull(message = "Balance is required")
-    @Column(name = "balance", nullable = false, precision = 15, scale = 2)
-    private BigDecimal balance = BigDecimal.ZERO;
 
     @NotNull(message = "Active status is required")
     @Column(name = "is_active", nullable = false)
@@ -70,12 +67,11 @@ public class BankAccounts {
     public BankAccounts() {}
 
     public BankAccounts(String accountNumber, String accountHolderName, String bankName, 
-                       String accountType, BigDecimal balance) {
+                       String accountType) {
         this.accountNumber = accountNumber;
         this.accountHolderName = accountHolderName;
         this.bankName = bankName;
         this.accountType = accountType;
-        this.balance = balance;
     }
 
     // Getters and Setters
@@ -135,14 +131,6 @@ public class BankAccounts {
         this.accountType = accountType;
     }
 
-    public BigDecimal getBalance() {
-        return balance;
-    }
-
-    public void setBalance(BigDecimal balance) {
-        this.balance = balance;
-    }
-
     public Boolean getIsActive() {
         return isActive;
     }
@@ -177,7 +165,6 @@ public class BankAccounts {
                 ", branchCode='" + branchCode + '\'' +
                 ", ifscCode='" + ifscCode + '\'' +
                 ", accountType='" + accountType + '\'' +
-                ", balance=" + balance +
                 ", isActive=" + isActive +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +

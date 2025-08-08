@@ -1,82 +1,39 @@
-package com.garage.backend.settings.entity;
-
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+package com.garage.backend.settings.dto;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Entity
-@Table(name = "Garage")
-@EntityListeners(AuditingEntityListener.class)
-public class Garage {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "id", columnDefinition = "UUID")
+public class GarageResponse {
     private UUID id;
-
-    @NotNull(message = "Created by user ID is required")
-    @Column(name = "created_by", nullable = false, columnDefinition = "UUID")
-    private UUID createdBy;
-
-    @NotBlank(message = "Garage name is required")
-    @Size(max = 255, message = "Garage name must not exceed 255 characters")
-    @Column(name = "garage_name", nullable = false)
     private String garageName;
-
-    @NotBlank(message = "Business registration number is required")
-    @Size(max = 100, message = "Business registration number must not exceed 100 characters")
-    @Column(name = "business_registration_number", nullable = false, unique = true)
     private String businessRegistrationNumber;
-
-    @Size(max = 50, message = "GST number must not exceed 50 characters")
-    @Column(name = "gst_number", unique = true)
     private String gstNumber;
 
-    @Size(max = 255, message = "Logo URL must not exceed 255 characters")
-    @Column(name = "logo_url")
     private String logoUrl;
-
-    @Size(max = 255, message = "Website URL must not exceed 255 characters")
-    @Column(name = "website_url")
     private String websiteUrl;
-
-    @NotBlank(message = "Business hours are required")
-    @Column(name = "business_hours", columnDefinition = "TEXT", nullable = false)
     private String businessHours;
-
-    @Column(name = "has_branch")
-    private Boolean hasBranch = false;
-
-    @NotNull(message = "Active status is required")
-    @Column(name = "is_active", nullable = false)
-    private Boolean isActive = true;
-
-    @CreatedDate
-    @Column(name = "created_at", nullable = false, updatable = false)
+    private Boolean hasBranch;
+    private Boolean isActive;
     private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     // Constructors
-    public Garage() {}
+    public GarageResponse() {}
 
-    public Garage(UUID createdBy, String garageName, String businessRegistrationNumber, String gstNumber, 
-                 String businessHours) {
-        this.createdBy = createdBy;
+    public GarageResponse(UUID id, String garageName, String businessRegistrationNumber, String gstNumber,
+                         String logoUrl, String websiteUrl, String businessHours,
+                         Boolean hasBranch, Boolean isActive, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
         this.garageName = garageName;
         this.businessRegistrationNumber = businessRegistrationNumber;
         this.gstNumber = gstNumber;
+        this.logoUrl = logoUrl;
+        this.websiteUrl = websiteUrl;
         this.businessHours = businessHours;
+        this.hasBranch = hasBranch;
+        this.isActive = isActive;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     // Getters and Setters
@@ -86,14 +43,6 @@ public class Garage {
 
     public void setId(UUID id) {
         this.id = id;
-    }
-
-    public UUID getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(UUID createdBy) {
-        this.createdBy = createdBy;
     }
 
     public String getGarageName() {
@@ -180,9 +129,8 @@ public class Garage {
 
     @Override
     public String toString() {
-        return "Garage{" +
+        return "GarageResponse{" +
                 "id=" + id +
-                ", createdBy=" + createdBy +
                 ", garageName='" + garageName + '\'' +
                 ", businessRegistrationNumber='" + businessRegistrationNumber + '\'' +
                 ", gstNumber='" + gstNumber + '\'' +

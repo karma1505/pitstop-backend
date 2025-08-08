@@ -297,11 +297,13 @@ public class FinancialTransactionService {
 
         // Set staff summary if available
         if (transaction.getCreatedBy() != null) {
+            String staffName = transaction.getCreatedBy().getFirstName() + " " + transaction.getCreatedBy().getLastName();
+            String staffRole = transaction.getCreatedBy().getRole().toString();
             FinancialTransactionResponse.StaffSummary staffSummary = 
                     new FinancialTransactionResponse.StaffSummary(
                             transaction.getCreatedBy().getId(),
-                            transaction.getCreatedBy().getName(),
-                            transaction.getCreatedBy().getRole()
+                            staffName,
+                            staffRole
                     );
             response.setCreatedBy(staffSummary);
         }

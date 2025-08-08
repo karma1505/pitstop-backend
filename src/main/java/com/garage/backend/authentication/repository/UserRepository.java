@@ -41,11 +41,4 @@ public interface UserRepository extends JpaRepository<User, UUID> {
      */
     Optional<User> findByMobileNumber(String mobileNumber);
 
-    /**
-     * Find user by email and garage name
-     * @param email user email
-     * @param garageName garage name
-     * @return Optional<User>
-     */
-    Optional<User> findByEmailAndGarageName(String email, String garageName);
-} 
+}

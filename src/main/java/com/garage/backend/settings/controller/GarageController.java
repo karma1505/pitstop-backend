@@ -28,14 +28,8 @@ public class GarageController {
      */
     @PostMapping
     public ResponseEntity<GarageResponse> createGarage(@Valid @RequestBody CreateGarageRequest request) {
-        try {
-            GarageResponse response = garageService.createGarage(request);
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        GarageResponse response = garageService.createGarage(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     /**
@@ -43,14 +37,8 @@ public class GarageController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<GarageResponse> getGarageById(@PathVariable UUID id) {
-        try {
-            GarageResponse response = garageService.getGarageById(id);
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        GarageResponse response = garageService.getGarageById(id);
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -60,13 +48,9 @@ public class GarageController {
     public ResponseEntity<Page<GarageResponse>> getAllGarages(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
-        try {
-            Pageable pageable = PageRequest.of(page, size);
-            Page<GarageResponse> response = garageService.getAllGarages(pageable);
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        Pageable pageable = PageRequest.of(page, size);
+        Page<GarageResponse> response = garageService.getAllGarages(pageable);
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -74,12 +58,8 @@ public class GarageController {
      */
     @GetMapping("/active")
     public ResponseEntity<List<GarageResponse>> getAllActiveGarages() {
-        try {
-            List<GarageResponse> response = garageService.getAllActiveGarages();
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        List<GarageResponse> response = garageService.getAllActiveGarages();
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -89,14 +69,8 @@ public class GarageController {
     public ResponseEntity<GarageResponse> updateGarage(
             @PathVariable UUID id,
             @Valid @RequestBody CreateGarageRequest request) {
-        try {
-            GarageResponse response = garageService.updateGarage(id, request);
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        GarageResponse response = garageService.updateGarage(id, request);
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -104,14 +78,8 @@ public class GarageController {
      */
     @PatchMapping("/{id}/deactivate")
     public ResponseEntity<GarageResponse> deactivateGarage(@PathVariable UUID id) {
-        try {
-            GarageResponse response = garageService.deactivateGarage(id);
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        GarageResponse response = garageService.deactivateGarage(id);
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -119,14 +87,8 @@ public class GarageController {
      */
     @PatchMapping("/{id}/activate")
     public ResponseEntity<GarageResponse> activateGarage(@PathVariable UUID id) {
-        try {
-            GarageResponse response = garageService.activateGarage(id);
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        GarageResponse response = garageService.activateGarage(id);
+        return ResponseEntity.ok(response);
     }
 
     /**

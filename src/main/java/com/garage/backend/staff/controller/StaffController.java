@@ -28,14 +28,8 @@ public class StaffController {
      */
     @PostMapping
     public ResponseEntity<StaffResponse> createStaff(@Valid @RequestBody CreateStaffRequest request) {
-        try {
-            StaffResponse response = staffService.createStaff(request);
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        StaffResponse response = staffService.createStaff(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     /**
@@ -43,14 +37,8 @@ public class StaffController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<StaffResponse> getStaffById(@PathVariable UUID id) {
-        try {
-            StaffResponse response = staffService.getStaffById(id);
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        StaffResponse response = staffService.getStaffById(id);
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -61,13 +49,9 @@ public class StaffController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(required = false) String role) {
-        try {
-            Pageable pageable = PageRequest.of(page, size);
-            Page<StaffResponse> response = staffService.getAllStaff(pageable, role);
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        Pageable pageable = PageRequest.of(page, size);
+        Page<StaffResponse> response = staffService.getAllStaff(pageable, role);
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -75,12 +59,8 @@ public class StaffController {
      */
     @GetMapping("/active")
     public ResponseEntity<List<StaffResponse>> getAllActiveStaff() {
-        try {
-            List<StaffResponse> response = staffService.getAllActiveStaff();
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        List<StaffResponse> response = staffService.getAllActiveStaff();
+        return ResponseEntity.ok(response);
     }
 
 
@@ -90,12 +70,8 @@ public class StaffController {
      */
     @GetMapping("/my-staff")
     public ResponseEntity<List<StaffResponse>> getCurrentUserStaff() {
-        try {
-            List<StaffResponse> response = staffService.getCurrentUserStaff();
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        List<StaffResponse> response = staffService.getCurrentUserStaff();
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -104,21 +80,20 @@ public class StaffController {
     @PatchMapping("/{id}")
     public ResponseEntity<StaffResponse> updateStaff(
             @PathVariable UUID id,
-            @Valid @RequestBody CreateStaffRequest request,
-            @RequestParam(required = false) String status) {
-        try {
-            StaffResponse response;
-            if (status != null) {
-                response = staffService.updateStaffStatus(id, status);
-            } else {
-                response = staffService.updateStaff(id, request);
-            }
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+            @Valid @RequestBody CreateStaffRequest request) {
+        StaffResponse response = staffService.updateStaff(id, request);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Update staff status (activate/deactivate)
+     */
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<StaffResponse> updateStaffStatus(
+            @PathVariable UUID id,
+            @RequestParam String status) {
+        StaffResponse response = staffService.updateStaffStatus(id, status);
+        return ResponseEntity.ok(response);
     }
 
     /**

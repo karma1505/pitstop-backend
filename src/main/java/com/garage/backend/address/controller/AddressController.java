@@ -2,6 +2,7 @@ package com.garage.backend.address.controller;
 
 import com.garage.backend.address.dto.AddressResponse;
 import com.garage.backend.address.dto.CreateAddressRequest;
+import com.garage.backend.address.dto.UpdateAddressRequest;
 import com.garage.backend.address.service.AddressService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,14 +26,8 @@ public class AddressController {
      */
     @PostMapping
     public ResponseEntity<AddressResponse> createAddress(@Valid @RequestBody CreateAddressRequest request) {
-        try {
-            AddressResponse response = addressService.createAddress(request);
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        AddressResponse response = addressService.createAddress(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     /**
@@ -40,14 +35,8 @@ public class AddressController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<AddressResponse> getAddressById(@PathVariable UUID id) {
-        try {
-            AddressResponse response = addressService.getAddressById(id);
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        AddressResponse response = addressService.getAddressById(id);
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -55,28 +44,18 @@ public class AddressController {
      */
     @GetMapping("/my-addresses")
     public ResponseEntity<List<AddressResponse>> getCurrentUserAddresses() {
-        try {
-            List<AddressResponse> responses = addressService.getCurrentUserAddresses();
-            return ResponseEntity.ok(responses);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        List<AddressResponse> responses = addressService.getCurrentUserAddresses();
+        return ResponseEntity.ok(responses);
     }
 
     /**
-     * Update address
+     * Update address (partial update)
      */
     @PatchMapping("/{id}")
     public ResponseEntity<AddressResponse> updateAddress(@PathVariable UUID id, 
-                                                       @Valid @RequestBody CreateAddressRequest request) {
-        try {
-            AddressResponse response = addressService.updateAddress(id, request);
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+                                                       @Valid @RequestBody UpdateAddressRequest request) {
+        AddressResponse response = addressService.updateAddressPartial(id, request);
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -84,13 +63,7 @@ public class AddressController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAddress(@PathVariable UUID id) {
-        try {
-            addressService.deleteAddress(id);
-            return ResponseEntity.noContent().build();
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        addressService.deleteAddress(id);
+        return ResponseEntity.noContent().build();
     }
 }

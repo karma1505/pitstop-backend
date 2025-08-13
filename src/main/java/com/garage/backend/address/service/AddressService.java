@@ -2,6 +2,7 @@ package com.garage.backend.address.service;
 
 import com.garage.backend.address.dto.AddressResponse;
 import com.garage.backend.address.dto.CreateAddressRequest;
+import com.garage.backend.address.dto.UpdateAddressRequest;
 import com.garage.backend.address.entity.Addresses;
 import com.garage.backend.address.repository.AddressesRepository;
 import com.garage.backend.shared.service.GarageContextService;
@@ -63,7 +64,7 @@ public class AddressService {
     }
 
     /**
-     * Update address
+     * Update address (full update)
      */
     public AddressResponse updateAddress(UUID id, CreateAddressRequest request) {
         Optional<Addresses> addressOptional = addressRepository.findById(id);
@@ -82,6 +83,45 @@ public class AddressService {
         address.setState(request.getState());
         address.setPincode(request.getPincode());
         address.setCountry(request.getCountry());
+
+        Addresses savedAddress = addressRepository.save(address);
+        return convertToResponse(savedAddress);
+    }
+
+    /**
+     * Update address (partial update)
+     */
+    public AddressResponse updateAddressPartial(UUID id, UpdateAddressRequest request) {
+        Optional<Addresses> addressOptional = addressRepository.findById(id);
+        if (addressOptional.isEmpty()) {
+            throw new RuntimeException("Address not found with ID: " + id);
+        }
+
+        Addresses address = addressOptional.get();
+        // Verify this address belongs to the current user's garage
+        if (!address.getGarageId().equals(garageContextService.getCurrentUserGarageId())) {
+            throw new RuntimeException("Address does not belong to your garage");
+        }
+
+        // Only update fields that are not null
+        if (request.getAddressLine1() != null) {
+            address.setAddressLine1(request.getAddressLine1());
+        }
+        if (request.getAddressLine2() != null) {
+            address.setAddressLine2(request.getAddressLine2());
+        }
+        if (request.getCity() != null) {
+            address.setCity(request.getCity());
+        }
+        if (request.getState() != null) {
+            address.setState(request.getState());
+        }
+        if (request.getPincode() != null) {
+            address.setPincode(request.getPincode());
+        }
+        if (request.getCountry() != null) {
+            address.setCountry(request.getCountry());
+        }
 
         Addresses savedAddress = addressRepository.save(address);
         return convertToResponse(savedAddress);
@@ -109,7 +149,7 @@ public class AddressService {
      * Convert entity to response DTO
      */
     private AddressResponse convertToResponse(Addresses address) {
-        return new AddressResponse(
+        AddressResponse response = new AddressResponse(
                 address.getId(),
                 address.getAddressLine1(),
                 address.getAddressLine2(),
@@ -120,5 +160,7 @@ public class AddressService {
                 address.getCreatedAt(),
                 address.getUpdatedAt()
         );
+        response.setGarageId(address.getGarageId());
+        return response;
     }
 }

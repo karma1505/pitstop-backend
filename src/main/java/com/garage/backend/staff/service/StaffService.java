@@ -115,7 +115,7 @@ public class StaffService {
     public List<StaffResponse> getStaffByRole(String role) {
         try {
             Enums.StaffRole staffRole = Enums.StaffRole.valueOf(role.toUpperCase());
-            List<Staff> staffList = staffRepository.findByRole(staffRole);
+            List<Staff> staffList = staffRepository.findActiveByRole(staffRole);
             return staffList.stream()
                     .map(this::convertToResponse)
                     .collect(Collectors.toList());

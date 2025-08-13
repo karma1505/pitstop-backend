@@ -13,8 +13,8 @@ public class WebConfig implements WebMvcConfigurer {
      */
     @Override
     public void configurePathMatch(PathMatchConfigurer configurer) {
-        // Disable suffix pattern matching to prevent conflicts
-        configurer.setUseSuffixPatternMatch(false);
-        configurer.setUseRegisteredSuffixPatternMatch(false);
+        // These methods are deprecated in newer Spring versions
+        // The functionality is now handled differently in Spring Boot 2.4+
+        // No explicit configuration needed for suffix pattern matching
     }
 }

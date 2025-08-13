@@ -453,13 +453,13 @@ Content-Type: application/json
 
 ### **4.7 Deactivate Staff**
 ```http
-PATCH {{baseUrl}}/admin/staff/{{staffId}}?status=DEACTIVATE
+PATCH {{baseUrl}}/admin/staff/{{staffId}}/status?status=DEACTIVATE
 Authorization: Bearer {{bearerToken}}
 ```
 
 ### **4.8 Activate Staff**
 ```http
-PATCH {{baseUrl}}/admin/staff/{{staffId}}?status=ACTIVATE
+PATCH {{baseUrl}}/admin/staff/{{staffId}}/status?status=ACTIVATE
 Authorization: Bearer {{bearerToken}}
 ```
 

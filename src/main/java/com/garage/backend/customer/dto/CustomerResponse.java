@@ -1,70 +1,40 @@
-package com.garage.backend.customer.entity;
-
-import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+package com.garage.backend.customer.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
-@Entity
-@Table(name = "Customers")
-@EntityListeners(AuditingEntityListener.class)
-public class Customers {
+/**
+ * Response DTO for customer operations
+ * 
+ * Scenario: Return Customer Information
+ *   Given a customer operation is performed
+ *   When the operation is successful
+ *   Then the system should return customer details
+ *   And include creation and update timestamps
+ */
+public class CustomerResponse {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "id", columnDefinition = "UUID")
     private UUID id;
-
-    @NotBlank(message = "Name is required")
-    @Size(min = 2, max = 100, message = "Name must be between 2 and 100 characters")
-    @Column(name = "name", nullable = false)
     private String name;
-
-    @NotBlank(message = "Phone number is required")
-    @Pattern(regexp = "^[0-9]{10,11}$", message = "Phone number must be 10-11 digits")
-    @Column(name = "phone", nullable = false, unique = true)
     private String phone;
-
-    @Email(message = "Email should be valid")
-    @Column(name = "email")
     private String email;
-
-    @Size(max = 255, message = "Address line 1 must not exceed 255 characters")
-    @Column(name = "address_line_1")
     private String addressLine1;
-
-    @Size(max = 255, message = "Address line 2 must not exceed 255 characters")
-    @Column(name = "address_line_2")
     private String addressLine2;
-
-    @Size(max = 100, message = "City must not exceed 100 characters")
-    @Column(name = "city")
     private String city;
-
-    @Size(max = 100, message = "State must not exceed 100 characters")
-    @Column(name = "state")
     private String state;
-
-    @Column(name = "is_regular_customer", nullable = false)
-    private Boolean isRegularCustomer = false;
-
-    @CreatedDate
-    @Column(name = "created_at", nullable = false, updatable = false)
+    private Boolean isRegularCustomer;
+    private List<VehicleSummaryResponse> vehicles;
     private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     // Constructors
-    public Customers() {}
+    public CustomerResponse() {}
 
-    public Customers(String name, String phone, String email, String addressLine1, String addressLine2, 
-                    String city, String state) {
+    public CustomerResponse(UUID id, String name, String phone, String email, String addressLine1, 
+                           String addressLine2, String city, String state, Boolean isRegularCustomer,
+                           List<VehicleSummaryResponse> vehicles, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
         this.name = name;
         this.phone = phone;
         this.email = email;
@@ -72,7 +42,10 @@ public class Customers {
         this.addressLine2 = addressLine2;
         this.city = city;
         this.state = state;
-        this.isRegularCustomer = false;
+        this.isRegularCustomer = isRegularCustomer;
+        this.vehicles = vehicles;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     // Getters and Setters
@@ -148,6 +121,14 @@ public class Customers {
         this.isRegularCustomer = isRegularCustomer;
     }
 
+    public List<VehicleSummaryResponse> getVehicles() {
+        return vehicles;
+    }
+
+    public void setVehicles(List<VehicleSummaryResponse> vehicles) {
+        this.vehicles = vehicles;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -166,7 +147,7 @@ public class Customers {
 
     @Override
     public String toString() {
-        return "Customers{" +
+        return "CustomerResponse{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", phone='" + phone + '\'' +
@@ -176,8 +157,9 @@ public class Customers {
                 ", city='" + city + '\'' +
                 ", state='" + state + '\'' +
                 ", isRegularCustomer=" + isRegularCustomer +
+                ", vehicles=" + vehicles +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';
     }
-} 
+}

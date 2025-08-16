@@ -1,14 +1,15 @@
 package com.garage.backend.vehicle.repository;
 
-import com.garage.backend.vehicle.entity.Vehicles;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import com.garage.backend.vehicle.entity.Vehicles;
 
 @Repository
 public interface VehiclesRepository extends JpaRepository<Vehicles, UUID> {
@@ -32,7 +33,8 @@ public interface VehiclesRepository extends JpaRepository<Vehicles, UUID> {
      * @param customerId customer ID
      * @return List<Vehicles>
      */
-    List<Vehicles> findByCustomerId(UUID customerId);
+    @Query("SELECT v FROM Vehicles v WHERE v.customer.id = :customerId")
+    List<Vehicles> findByCustomerId(@Param("customerId") UUID customerId);
 
     /**
      * Find vehicles by make

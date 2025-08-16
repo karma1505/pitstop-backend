@@ -52,4 +52,7 @@ public interface GarageRepository extends JpaRepository<Garage, UUID> {
     // Find garage by user email (joins with User table)
     @Query("SELECT g FROM Garage g JOIN User u ON g.createdBy = u.id WHERE u.email = :userEmail")
     Optional<Garage> findByUserEmail(@Param("userEmail") String userEmail);
+
+    // Find garages by created by user ID
+    List<Garage> findByCreatedBy(UUID createdBy);
 }

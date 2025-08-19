@@ -1,13 +1,13 @@
 package com.garage.backend.settings.dto;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 public class CreateGarageRequest {
     @NotBlank(message = "Garage name is required")
     @Size(max = 255, message = "Garage name must not exceed 255 characters")
     private String garageName;
 
-    @NotBlank(message = "Business registration number is required")
     @Size(max = 100, message = "Business registration number must not exceed 100 characters")
     private String businessRegistrationNumber;
 

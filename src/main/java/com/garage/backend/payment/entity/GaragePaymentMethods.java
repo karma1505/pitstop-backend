@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import com.garage.backend.settings.entity.Garage;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -40,6 +41,11 @@ public class GaragePaymentMethods {
     @LastModifiedDate
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    // Many-to-One relationship with Garage (read-only)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "garage_id", insertable = false, updatable = false)
+    private Garage garage;
 
     // Constructors
     public GaragePaymentMethods() {}
@@ -96,6 +102,14 @@ public class GaragePaymentMethods {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Garage getGarage() {
+        return garage;
+    }
+
+    public void setGarage(Garage garage) {
+        this.garage = garage;
     }
 
     @Override

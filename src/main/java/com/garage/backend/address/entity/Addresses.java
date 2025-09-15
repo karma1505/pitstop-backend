@@ -1,5 +1,6 @@
 package com.garage.backend.address.entity;
 
+import com.garage.backend.settings.entity.Garage;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -59,6 +60,11 @@ public class Addresses {
     @LastModifiedDate
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    // Many-to-One relationship with Garage (read-only)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "garage_id", insertable = false, updatable = false)
+    private Garage garage;
 
     // Constructors
     public Addresses() {}
@@ -136,6 +142,14 @@ public class Addresses {
 
     public void setCountry(String country) {
         this.country = country;
+    }
+
+    public Garage getGarage() {
+        return garage;
+    }
+
+    public void setGarage(Garage garage) {
+        this.garage = garage;
     }
 
     public LocalDateTime getCreatedAt() {

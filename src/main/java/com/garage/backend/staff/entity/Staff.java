@@ -1,5 +1,6 @@
 package com.garage.backend.staff.entity;
 
+import com.garage.backend.settings.entity.Garage;
 import com.garage.backend.shared.enums.Enums;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -23,6 +24,11 @@ public class Staff {
     @NotNull(message = "Garage ID is required")
     @Column(name = "garage_id", nullable = false, columnDefinition = "UUID")
     private UUID garageId;
+
+    // Many-to-One relationship with Garage (read-only)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "garage_id", insertable = false, updatable = false)
+    private Garage garage;
 
     @NotBlank(message = "First name is required")
     @Size(min = 2, max = 50, message = "First name must be between 2 and 50 characters")
@@ -88,6 +94,14 @@ public class Staff {
 
     public void setGarageId(UUID garageId) {
         this.garageId = garageId;
+    }
+
+    public Garage getGarage() {
+        return garage;
+    }
+
+    public void setGarage(Garage garage) {
+        this.garage = garage;
     }
 
     public String getFirstName() {

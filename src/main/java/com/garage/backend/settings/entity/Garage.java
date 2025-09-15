@@ -1,13 +1,13 @@
 package com.garage.backend.settings.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import com.garage.backend.authentication.entity.User;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -25,6 +25,11 @@ public class Garage {
     @NotNull(message = "Created by user ID is required")
     @Column(name = "created_by", nullable = false, columnDefinition = "UUID")
     private UUID createdBy;
+
+    // Many-to-One relationship with User (read-only)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "created_by", insertable = false, updatable = false)
+    private User createdByUser;
 
     @NotBlank(message = "Garage name is required")
     @Size(max = 255, message = "Garage name must not exceed 255 characters")
@@ -94,6 +99,14 @@ public class Garage {
 
     public void setCreatedBy(UUID createdBy) {
         this.createdBy = createdBy;
+    }
+
+    public User getCreatedByUser() {
+        return createdByUser;
+    }
+
+    public void setCreatedByUser(User createdByUser) {
+        this.createdByUser = createdByUser;
     }
 
     public String getGarageName() {

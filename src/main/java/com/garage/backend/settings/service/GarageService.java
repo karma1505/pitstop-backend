@@ -28,13 +28,24 @@ public class GarageService {
      * Create a new garage
      */
     public GarageResponse createGarage(CreateGarageRequest request) {
+        // Normalize empty strings to null and generate default if needed
+        String businessRegistrationNumber = normalizeString(request.getBusinessRegistrationNumber());
+        if (businessRegistrationNumber == null) {
+            // Generate a unique default business registration number
+            businessRegistrationNumber = "BRN-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+        }
+        
+        String gstNumber = normalizeString(request.getGstNumber());
+        String logoUrl = normalizeString(request.getLogoUrl());
+        String websiteUrl = normalizeString(request.getWebsiteUrl());
+
         // Check if garage with same business registration number already exists
-        if (garageRepository.existsByBusinessRegistrationNumber(request.getBusinessRegistrationNumber())) {
+        if (garageRepository.existsByBusinessRegistrationNumber(businessRegistrationNumber)) {
             throw new RuntimeException("Garage with this business registration number already exists");
         }
 
-        // Check if garage with same GST number already exists
-        if (garageRepository.existsByGstNumber(request.getGstNumber())) {
+        // Check if garage with same GST number already exists (only if provided)
+        if (gstNumber != null && garageRepository.existsByGstNumber(gstNumber)) {
             throw new RuntimeException("Garage with this GST number already exists");
         }
 
@@ -44,16 +55,26 @@ public class GarageService {
         Garage garage = new Garage();
         garage.setCreatedBy(currentUserId);
         garage.setGarageName(request.getGarageName());
-        garage.setBusinessRegistrationNumber(request.getBusinessRegistrationNumber());
-        garage.setGstNumber(request.getGstNumber());
-        garage.setLogoUrl(request.getLogoUrl());
-        garage.setWebsiteUrl(request.getWebsiteUrl());
+        garage.setBusinessRegistrationNumber(businessRegistrationNumber);
+        garage.setGstNumber(gstNumber);
+        garage.setLogoUrl(logoUrl);
+        garage.setWebsiteUrl(websiteUrl);
         garage.setBusinessHours(request.getBusinessHours());
         garage.setHasBranch(request.getHasBranch());
         garage.setIsActive(true);
 
         Garage savedGarage = garageRepository.save(garage);
         return convertToResponse(savedGarage);
+    }
+    
+    /**
+     * Normalize string: convert empty strings to null, trim whitespace
+     */
+    private String normalizeString(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return null;
+        }
+        return value.trim();
     }
 
     /**
@@ -97,23 +118,36 @@ public class GarageService {
 
         Garage garage = garageOptional.get();
 
+        // Normalize empty strings to null
+        String businessRegistrationNumber = normalizeString(request.getBusinessRegistrationNumber());
+        if (businessRegistrationNumber == null) {
+            // Keep existing value if new value is empty
+            businessRegistrationNumber = garage.getBusinessRegistrationNumber();
+        }
+        
+        String gstNumber = normalizeString(request.getGstNumber());
+        String logoUrl = normalizeString(request.getLogoUrl());
+        String websiteUrl = normalizeString(request.getWebsiteUrl());
+
         // Check if business registration number is being changed and if it already exists
-        if (!garage.getBusinessRegistrationNumber().equals(request.getBusinessRegistrationNumber()) &&
-            garageRepository.existsByBusinessRegistrationNumber(request.getBusinessRegistrationNumber())) {
+        if (!garage.getBusinessRegistrationNumber().equals(businessRegistrationNumber) &&
+            garageRepository.existsByBusinessRegistrationNumber(businessRegistrationNumber)) {
             throw new RuntimeException("Garage with this business registration number already exists");
         }
 
-        // Check if GST number is being changed and if it already exists
-        if (!garage.getGstNumber().equals(request.getGstNumber()) &&
-            garageRepository.existsByGstNumber(request.getGstNumber())) {
+        // Check if GST number is being changed and if it already exists (only if provided)
+        String existingGstNumber = garage.getGstNumber();
+        if (gstNumber != null && 
+            (existingGstNumber == null || !gstNumber.equals(existingGstNumber)) &&
+            garageRepository.existsByGstNumber(gstNumber)) {
             throw new RuntimeException("Garage with this GST number already exists");
         }
 
         garage.setGarageName(request.getGarageName());
-        garage.setBusinessRegistrationNumber(request.getBusinessRegistrationNumber());
-        garage.setGstNumber(request.getGstNumber());
-        garage.setLogoUrl(request.getLogoUrl());
-        garage.setWebsiteUrl(request.getWebsiteUrl());
+        garage.setBusinessRegistrationNumber(businessRegistrationNumber);
+        garage.setGstNumber(gstNumber);
+        garage.setLogoUrl(logoUrl);
+        garage.setWebsiteUrl(websiteUrl);
         garage.setBusinessHours(request.getBusinessHours());
         garage.setHasBranch(request.getHasBranch());
 

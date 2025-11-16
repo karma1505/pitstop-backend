@@ -3,37 +3,37 @@ spring:
     name: garage-backend
   
   datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/garage_db}
+    username: ${DB_USERNAME:garage_app}
+    password: ${DB_PASSWORD:karmakaze69}
     driver-class-name: org.postgresql.Driver
   
   jpa:
     hibernate:
-      ddl-auto: update
-    show-sql: true
+      ddl-auto: update  # This will create/update tables from your entity classes
+    show-sql: true      # Set to true to see SQL being executed
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
   
   flyway:
-    enabled: false
+    enabled: false  # Disable Flyway so Hibernate can manage schema
     baseline-on-migrate: true
     clean-disabled: false
     locations: classpath:db/migration
   
   security:
     jwt:
-      secret: ${JWT_SECRET}
-      expiration: ${JWT_EXPIRATION}
-      refresh-expiration: ${JWT_REFRESH_EXPIRATION}
+      secret: ${JWT_SECRET:200d09752aeb0498a006435ca65ee3ffb7121f4e4f7b53ff491507d195400f6f}
+      expiration: ${JWT_EXPIRATION:86400000}
+      refresh-expiration: ${JWT_REFRESH_EXPIRATION:604800000}
 
   mail:
     host: smtp.gmail.com
     port: 587
-    username: ${GMAIL_USERNAME}
-    password: ${GMAIL_APP_PASSWORD}
+    username: ${GMAIL_USERNAME:karmanyasingh8@gmail.com}
+    password: ${GMAIL_APP_PASSWORD:yjplyzzogvuyuuhv}
     properties:
       mail:
         smtp:
@@ -44,9 +44,10 @@ spring:
           connectiontimeout: 5000
 
 server:
-  port: ${SERVER_PORT}
+  port: ${SERVER_PORT:8080}
+  address: ${SERVER_ADDRESS:0.0.0.0}  # Listen on all interfaces to allow access via IP
   servlet:
-    context-path: ${SERVER_CONTEXT_PATH}
+    context-path: ${SERVER_CONTEXT_PATH:/api/v1}
   error:
     include-message: always
     include-binding-errors: always
@@ -66,20 +67,24 @@ management:
       show-details: always
   health:
     mail:
-      enabled: true
+      enabled: false
 
 logging:
   level:
-    com.garage.backend: ${LOGGING_LEVEL}
-    org.springframework.security: ${LOGGING_LEVEL}
-    org.hibernate.SQL: OFF
-    org.hibernate.type.descriptor.sql.BasicBinder: OFF
-    org.flywaydb: ${LOGGING_LEVEL}
-    org.springframework.web: ${LOGGING_LEVEL}
+    com.garage.backend: ${LOGGING_LEVEL:DEBUG}
+    org.springframework.security: ${LOGGING_LEVEL:DEBUG}
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.flywaydb: ${LOGGING_LEVEL:DEBUG}
+    org.springframework.web: ${LOGGING_LEVEL:DEBUG}
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} - %-5level - %logger{36} - %msg%n"
 
 aws:
-  region: ${AWS_REGION}
+  region: ${AWS_REGION:us-east-1}
   s3:
-    bucket-name: ${AWS_S3_BUCKET_NAME} 
+    bucket-name: ${AWS_S3_BUCKET_NAME:}
+
+# Application Base URL Configuration
+app:
+  base-url: ${APP_BASE_URL:http://10.59.196.55:8080/api/v1} 

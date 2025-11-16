@@ -17,6 +17,8 @@ import com.garage.backend.shared.service.GarageContextService;
 import com.garage.backend.staff.dto.CreateStaffRequest;
 import com.garage.backend.staff.dto.StaffResponse;
 import com.garage.backend.staff.service.StaffService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +28,8 @@ import java.util.UUID;
 
 @Service
 public class OnboardingService {
+
+    private static final Logger logger = LoggerFactory.getLogger(OnboardingService.class);
 
     @Autowired
     private GarageService garageService;
@@ -47,33 +51,49 @@ public class OnboardingService {
      */
     @Transactional
     public OnboardingResponse completeOnboarding(OnboardingRequest request) {
+        logger.info("Starting onboarding completion for user");
         try {
             // Step 1: Create Garage
+            logger.debug("Step 1: Creating garage");
             GarageResponse garage = garageService.createGarage(request.getGarageRequest());
             UUID garageId = garage.getId();
+            logger.debug("Garage created with ID: {}", garageId);
 
             // Step 2: Create Address
+            logger.debug("Step 2: Creating address");
             AddressResponse address = null;
             if (request.getAddressRequest() != null) {
                 address = addressService.createAddress(request.getAddressRequest());
+                logger.debug("Address created successfully");
+            } else {
+                logger.debug("No address request provided");
             }
 
             // Step 3: Configure Payment Methods
+            logger.debug("Step 3: Configuring payment methods");
             List<GaragePaymentMethodResponse> paymentMethods = null;
             if (request.getPaymentMethodRequests() != null && !request.getPaymentMethodRequests().isEmpty()) {
                 paymentMethods = request.getPaymentMethodRequests().stream()
                         .map(paymentMethodsService::createGaragePaymentMethod)
                         .toList();
+                logger.debug("Created {} payment methods", paymentMethods.size());
+            } else {
+                logger.debug("No payment methods to configure");
             }
 
             // Step 4: Add Staff Members
+            logger.debug("Step 4: Adding staff members");
             List<StaffResponse> staffMembers = null;
             if (request.getStaffRequests() != null && !request.getStaffRequests().isEmpty()) {
                 staffMembers = request.getStaffRequests().stream()
                         .map(staffService::createStaff)
                         .toList();
+                logger.debug("Created {} staff members", staffMembers.size());
+            } else {
+                logger.debug("No staff members to add");
             }
 
+            logger.info("Onboarding completed successfully");
             return OnboardingResponse.builder()
                     .success(true)
                     .message("Onboarding completed successfully")
@@ -84,6 +104,7 @@ public class OnboardingService {
                     .build();
 
         } catch (Exception e) {
+            logger.error("Error during onboarding completion", e);
             throw new RuntimeException("Onboarding failed: " + e.getMessage(), e);
         }
     }

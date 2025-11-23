@@ -87,4 +87,4 @@ aws:
 
 # Application Base URL Configuration
 app:
-  base-url: ${APP_BASE_URL:http://10.59.196.55:8080/api/v1} 
+  base-url: ${APP_BASE_URL:http://192.168.1.5:8080/api/v1} 

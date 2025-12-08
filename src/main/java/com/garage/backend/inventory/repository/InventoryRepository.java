@@ -32,6 +32,9 @@ public interface InventoryRepository extends JpaRepository<Inventory, UUID> {
     // Find active items
     List<Inventory> findByIsActiveTrue();
 
+    // Find by active status
+    List<Inventory> findByIsActive(Boolean isActive);
+
     // Find by cost price range
     List<Inventory> findByCostPriceBetween(BigDecimal minPrice, BigDecimal maxPrice);
 

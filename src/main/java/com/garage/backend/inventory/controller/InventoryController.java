@@ -74,7 +74,7 @@ public class InventoryController {
      * 
      * Scenario: Update Inventory Item via API
      *   Given a garage owner wants to update item details via API
-     *   When they send a PUT request with valid updated information
+     *   When they send a PATCH request with valid updated information
      *   Then the system should update the inventory record
      *   And return 200 OK with updated item information
      *   But if item does not exist
@@ -86,7 +86,7 @@ public class InventoryController {
      * @param request UpdateInventoryItemRequest with updated details
      * @return ResponseEntity<InventoryItemResponse> with updated item
      */
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<InventoryItemResponse> updateInventoryItem(
             @PathVariable UUID id,
             @Valid @RequestBody UpdateInventoryItemRequest request) {

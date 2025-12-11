@@ -19,7 +19,7 @@ import java.util.UUID;
  * Provides endpoints for CRUD operations on service categories
  */
 @RestController
-@RequestMapping("/api/v1/admin/service-categories")
+@RequestMapping("/admin/service-categories")
 public class ServiceCategoryController {
 
     @Autowired
